@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "Note-taker",
+  "description": "Extension for convenient note-taking of web pages",
+  "version": "1.0.0",
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Highlighter",
+    "default_icon": "highlighter-icon.png"
+  },
+  "permissions": ["tabs", "bookmarks", "storage", "identity"],
+  "icons": {
+    "16": "highlighter-icon.png",
+    "48": "highlighter-icon.png",
+    "128": "highlighter-icon.png"
+  },
+  "options_page": "options.html",
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["highlights.js"]
+    }
+  ]
+}

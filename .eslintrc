@@ -1,0 +1,89 @@
+{
+	"root": true,
+	"parser": "@typescript-eslint/parser",
+	"plugins": [
+		"@typescript-eslint",
+		"import"
+	],
+	"extends": [
+		"eslint:recommended",
+		"plugin:@typescript-eslint/eslint-recommended",
+		"plugin:@typescript-eslint/recommended",
+		"plugin:prettier/recommended",
+		"plugin:import/errors",
+		"plugin:import/warnings"
+	],
+	"rules": {
+		"@typescript-eslint/no-unused-vars": [
+			"error",
+			{
+				"argsIgnorePattern": "_"
+			}
+		],
+		"@typescript-eslint/ban-types": "warn",
+		"@typescript-eslint/no-explicit-any": "warn",
+		"@typescript-eslint/explicit-function-return-type": [
+			"warn"
+		],
+		"prefer-const": "error",
+		"no-console": "warn",
+		"comma-dangle": [
+			"error",
+			"always-multiline"
+		],
+		"@typescript-eslint/naming-convention": [
+			"error",
+			{
+				"selector": "interface",
+				"format": [
+					"PascalCase"
+				],
+				"custom": {
+					"regex": "^I[A-Z]",
+					"match": true
+				}
+			},
+			{
+				"selector": "typeAlias",
+				"format": [
+					"PascalCase"
+				],
+				"custom": {
+					"regex": "^T[A-Z]",
+					"match": true
+				}
+			}
+		],
+		"import/order": [
+			"error",
+			{
+				"groups": [
+					"builtin",
+					"external",
+					"internal",
+					"parent",
+					"sibling",
+					"index",
+					"object",
+					"type"
+				],
+				"newlines-between": "always"
+			}
+		],
+		"import/no-unresolved": "off",
+		"prettier/prettier": [
+			"error",
+			{
+				"singleQuote": true,
+				"useTabs": true,
+				"semi": true,
+				"trailingComma": "es5",
+				"bracketSpacing": true,
+				"printWidth": 100,
+				"endOfLine": "auto",
+				"arrowParens": "always",
+				"singleAttributePerLine": true
+			}
+		]
+	}
+}
