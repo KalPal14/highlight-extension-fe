@@ -4,8 +4,10 @@ import { useForm } from 'react-hook-form';
 import { FormErrorMessage, FormLabel, FormControl, Input, Button } from '@chakra-ui/react';
 import cl from 'classnames';
 
-import { tabsRoutes } from '@/common/constants/routes/tabs';
 import './login.scss';
+import { tabsRoutes } from '@/common/constants/routes/tabs';
+import ApiServise from '@/common/services/api.service';
+import { HTTPError } from '@/errors/http-error';
 
 export default function LoginPage(): JSX.Element {
 	const {
@@ -16,8 +18,14 @@ export default function LoginPage(): JSX.Element {
 
 	const [name, setName] = useState<string | null>(null);
 
-	function onSubmit(values: { name: string }): void {
+	async function onSubmit(values: { name: string }): Promise<void> {
 		setName(values.name);
+		const resp = await new ApiServise().post('https://localhost:8000/users/login');
+		if (resp instanceof HTTPError) {
+			console.log(resp.payload);
+		} else {
+			console.log(resp);
+		}
 	}
 
 	return (

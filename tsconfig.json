@@ -1,20 +1,20 @@
 {
-  "compilerOptions": {
-    "jsx": "react",
-    "target": "es6",
-    "module": "Node16",
-    "moduleResolution": "Node16",
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "baseUrl": "./src",
-    "paths": {
-      "@/*": ["*"]
-    },
-    "forceConsistentCasingInFileNames": true,
-    "sourceMap": true,
-    "removeComments": true,
-    "strict": true
-  },
-  "include": ["src/**/*.ts", "src/**/*.tsx"],
-  "exclude": ["node_modules"]
+	"compilerOptions": {
+		"jsx": "react",
+		"target": "es6",
+		"module": "Node16",
+		"moduleResolution": "Node16",
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"baseUrl": "./src",
+		"paths": {
+			"@/*": ["*"]
+		},
+		"forceConsistentCasingInFileNames": true,
+		"sourceMap": true,
+		"removeComments": true,
+		"strict": true
+	},
+	"include": ["src/**/*.ts", "src/**/*.tsx"],
+	"exclude": ["node_modules"]
 }
