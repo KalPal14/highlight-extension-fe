@@ -1,66 +1,64 @@
-import React, { ReactNode, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { FormErrorMessage, FormLabel, FormControl, Input, Button } from '@chakra-ui/react';
-import cl from 'classnames';
+import { Text, Heading } from '@chakra-ui/react';
 
 import './login.scss';
-import { tabsRoutes } from '@/common/constants/routes/tabs';
-import ApiServise from '@/common/services/api.service';
-import { HTTPError } from '@/errors/http-error';
+import LoginForm from './login-form';
+
+import { TABS_ROUTES } from '@/common/constants/routes/tabs';
+import { getCookie } from '@/common/services/cookies.service';
+import HighAlert, { IHighAlertProps } from '@/common/ui/alerts/high-alert';
 
 export default function LoginPage(): JSX.Element {
-	const {
-		handleSubmit,
-		register,
-		formState: { errors, isSubmitting },
-	} = useForm<{ name: string }>();
+	const [highAlert, setHighAlert] = useState<IHighAlertProps | null>(null);
 
-	const [name, setName] = useState<string | null>(null);
+	useEffect(() => {
+		loginCheck();
+	}, []);
 
-	async function onSubmit(values: { name: string }): Promise<void> {
-		setName(values.name);
-		const resp = await new ApiServise().post('https://localhost:8000/users/login');
-		if (resp instanceof HTTPError) {
-			console.log(resp.payload);
-		} else {
-			console.log(resp);
+	async function loginCheck(): Promise<void> {
+		const isLoggedIn = await getCookie('token');
+		if (isLoggedIn) {
+			setHighAlert({
+				title: 'You are already logged in to your account',
+				description: 'To log in to another account, log out of the current one',
+				status: 'info',
+			});
 		}
 	}
 
+	function onSuccessLogin(): void {
+		setHighAlert({
+			title: 'You have successfully logged in',
+			description: 'You can close this tab',
+		});
+	}
+
 	return (
-		<div className={cl('p-5')}>
-			<h1>{name ? `Hello ${name}` : 'Login'}</h1>
-			<Link
-				className="mt-2 mb-2"
-				to={tabsRoutes.registration}
-			>
-				Registration
-			</Link>
-			<form onSubmit={handleSubmit(onSubmit)}>
-				<FormControl isInvalid={Boolean(errors?.name)}>
-					<FormLabel htmlFor="name">First name</FormLabel>
-					<Input
-						id="name"
-						placeholder="name"
-						size="sm"
-						{...register('name', {
-							required: 'This is required',
-							minLength: { value: 4, message: 'Minimum length should be 4' },
-						})}
-					/>
-					<FormErrorMessage>{(errors.name && errors.name.message) as ReactNode}</FormErrorMessage>
-				</FormControl>
-				<Button
-					mt={4}
-					size="sm"
-					colorScheme="teal"
-					isLoading={isSubmitting}
-					type="submit"
-				>
-					Submit
-				</Button>
-			</form>
+		<div className="loginPage">
+			{!highAlert && (
+				<section className="loginPage_formSection">
+					<Heading as="h1">Log in</Heading>
+					<Text>
+						Don't have an account?{' '}
+						<Text
+							color="teal.500"
+							as="u"
+						>
+							<Link to={TABS_ROUTES.registration}>Please register</Link>
+						</Text>
+					</Text>
+					<LoginForm onSuccess={onSuccessLogin} />
+				</section>
+			)}
+			{Boolean(highAlert) && (
+				<HighAlert
+					title={highAlert!.title}
+					description={highAlert!.description}
+					status={highAlert?.status}
+					className="loginPage_alert"
+				/>
+			)}
 		</div>
 	);
 }

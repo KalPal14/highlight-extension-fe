@@ -8,7 +8,7 @@
 		"default_title": "Highlighter",
 		"default_icon": "highlighter-icon.png"
 	},
-	"permissions": ["tabs", "bookmarks", "storage", "identity"],
+	"permissions": ["tabs", "bookmarks", "storage", "identity", "cookies"],
 	"icons": {
 		"16": "highlighter-icon.png",
 		"48": "highlighter-icon.png",

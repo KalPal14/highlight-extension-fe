@@ -1,1 +1,1 @@
-export const rootOptionsRoute = 'options.html';
+export const ROOT_OPTIONS_ROUTE = 'options.html';

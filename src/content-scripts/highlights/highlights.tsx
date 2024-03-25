@@ -1,14 +1,14 @@
 import React from 'react';
 
 import './highlights.scss';
-import { fullTabsRoutes } from '@/common/constants/routes/tabs';
+import { FULL_TABS_ROUTES } from '@/common/constants/routes/tabs';
 
 export default function Highlights(): JSX.Element {
 	return (
 		<div className="highlights">
 			<button
 				onClick={() => {
-					window.open(chrome.runtime.getURL(fullTabsRoutes.login));
+					window.open(chrome.runtime.getURL(FULL_TABS_ROUTES.login));
 				}}
 			>
 				LoginPage

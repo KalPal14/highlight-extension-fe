@@ -1,0 +1,14 @@
+.loginPage {
+   height: 100vh;
+   padding: 15px;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   justify-content: center;
+
+   &_formSection,
+   &_alert {
+      max-width: 504px;
+      width: 100%;
+   }
+}

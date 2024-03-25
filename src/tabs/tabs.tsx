@@ -5,21 +5,21 @@ import PagesPage from './pages';
 import LoginPage from './login';
 import RegistrationPage from './registration';
 
-import { tabsRoutes } from '@/common/constants/routes/tabs';
+import { TABS_ROUTES } from '@/common/constants/routes/tabs';
 
 export default function Tabs(): JSX.Element {
 	return (
 		<Routes>
 			<Route
-				path={tabsRoutes.login}
+				path={TABS_ROUTES.login}
 				element={<LoginPage />}
 			/>
 			<Route
-				path={tabsRoutes.registration}
+				path={TABS_ROUTES.registration}
 				element={<RegistrationPage />}
 			/>
 			<Route
-				path={tabsRoutes.pages}
+				path={TABS_ROUTES.pages}
 				element={<PagesPage />}
 			/>
 		</Routes>
