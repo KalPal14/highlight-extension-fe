@@ -20,6 +20,8 @@ export default function LoginSection(): JSX.Element {
 					onClick={() => goTo(FULL_TABS_ROUTES.registration)}
 					color="teal.500"
 					as="u"
+					cursor="pointer"
+					mb={0}
 				>
 					Please register
 				</Text>

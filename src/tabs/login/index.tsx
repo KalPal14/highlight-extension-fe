@@ -44,6 +44,7 @@ export default function LoginPage(): JSX.Element {
 						<Text
 							color="teal.500"
 							as="u"
+							cursor="pointer"
 						>
 							<Link to={TABS_ROUTES.registration}>Please register</Link>
 						</Text>

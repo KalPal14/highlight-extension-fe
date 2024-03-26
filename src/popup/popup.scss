@@ -1,4 +1,16 @@
 .popup {
     width: 320px;
-    padding: 5px;
+    padding: 10px 0;
+
+    &_header, &_login, &_logout {
+        padding: 0 5px;
+    }
+    
+    &_header {
+        display: flex;
+        justify-content: flex-end;
+        border-bottom: 2px solid #dde2e7;
+        padding-bottom: 12px;
+        margin-bottom: 24px;
+    }
  }

@@ -9,7 +9,7 @@ import {
 	useBoolean,
 	InputGroup,
 } from '@chakra-ui/react';
-import { LockIcon, UnlockIcon } from '@chakra-ui/icons';
+import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import { FieldError, FieldValues, Path, RegisterOptions, UseFormRegister } from 'react-hook-form';
 
 export interface ITextFieldProps<FormFields extends FieldValues> {
@@ -52,7 +52,7 @@ export default function TextField<FormFields extends FieldValues>({
 				></Input>
 				{type === 'password' && (
 					<InputRightElement onClick={setHideText.toggle}>
-						{hideText ? <LockIcon /> : <UnlockIcon />}
+						{hideText ? <ViewOffIcon /> : <ViewIcon />}
 					</InputRightElement>
 				)}
 			</InputGroup>
