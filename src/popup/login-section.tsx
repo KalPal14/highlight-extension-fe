@@ -14,7 +14,7 @@ export default function LoginSection(): JSX.Element {
 			>
 				Log in
 			</Button>
-			<Text>
+			<Text mb={0}>
 				Don't have an account?{' '}
 				<Text
 					onClick={() => goTo(FULL_TABS_ROUTES.registration)}
