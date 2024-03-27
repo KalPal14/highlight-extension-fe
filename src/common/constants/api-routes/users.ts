@@ -6,4 +6,5 @@ export const USERS_API_ROUTES = {
 	changePassword: '/users/change-password',
 	changeEmail: '/users/change-email',
 	changeUsername: '/users/change-username',
+	getUserInfo: '/users/get-info',
 };
