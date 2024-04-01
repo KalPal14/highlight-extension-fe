@@ -5,6 +5,7 @@ import './options.scss';
 
 import ChangeEmailForm from './change-email-form';
 import ChangeUsernameForm from './change-username-form';
+import ChangePasswordForm from './change-password-form';
 
 import ApiServise from '@/common/services/api.service';
 import { USERS_API_ROUTES } from '@/common/constants/api-routes/users';
@@ -29,6 +30,7 @@ const OptionsPage = (): JSX.Element => {
 			<Heading
 				as="h1"
 				size="2xl"
+				mb={5}
 			>
 				Settings
 			</Heading>
@@ -36,7 +38,7 @@ const OptionsPage = (): JSX.Element => {
 				<Heading
 					as="h2"
 					size="xl"
-					mt={4}
+					mb={4}
 				>
 					User info
 				</Heading>
@@ -67,6 +69,15 @@ const OptionsPage = (): JSX.Element => {
 								setUserInfo({
 									...userInfo,
 									username,
+								})
+							}
+						/>
+						<ChangePasswordForm
+							passwordUpdatedAt={userInfo.passwordUpdatedAt}
+							onSuccess={(passwordUpdatedAt) =>
+								setUserInfo({
+									...userInfo,
+									passwordUpdatedAt,
 								})
 							}
 						/>
