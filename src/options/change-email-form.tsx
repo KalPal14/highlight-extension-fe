@@ -76,7 +76,8 @@ export default function ChangeEmailForm({
 			useFormReturnValue={useFormReturnValue}
 			onSubmitHandler={onSubmit}
 			accordionButtonText={currentEmail}
-			tooltipLabel="Edit email"
+			tooltipLabel="edit"
+			labelText="Email"
 		>
 			<>
 				<TextField

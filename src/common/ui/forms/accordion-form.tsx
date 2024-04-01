@@ -9,6 +9,7 @@ import {
 	Button,
 	Box,
 	useBoolean,
+	FormLabel,
 } from '@chakra-ui/react';
 import { FieldValues, UseFormReturn } from 'react-hook-form';
 
@@ -20,6 +21,7 @@ export interface IAccordionFormProps<Form extends FieldValues> {
 	onSubmitHandler: (formValue: Form) => Promise<boolean>;
 	accordionButtonText: string;
 	tooltipLabel?: string;
+	labelText?: string;
 }
 
 export default function AccordionForm<Form extends FieldValues>({
@@ -28,6 +30,7 @@ export default function AccordionForm<Form extends FieldValues>({
 	onSubmitHandler,
 	accordionButtonText,
 	tooltipLabel,
+	labelText,
 }: IAccordionFormProps<Form>): JSX.Element {
 	const [isNeedToExpand, setIsNeedToExpand] = useBoolean(false);
 
@@ -51,11 +54,17 @@ export default function AccordionForm<Form extends FieldValues>({
 
 	return (
 		<Accordion
-			mb={2}
+			pb={5}
 			className="accordionForm"
 			index={isNeedToExpand ? 0 : -1}
 		>
-			<AccordionItem border="none">
+			<FormLabel
+				mb={1}
+				fontWeight={600}
+			>
+				{labelText}
+			</FormLabel>
+			<AccordionItem className="accordionForm_item">
 				{({ isExpanded }) => (
 					<>
 						<Tooltip
