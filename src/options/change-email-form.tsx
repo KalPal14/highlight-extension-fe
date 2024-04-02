@@ -6,7 +6,7 @@ import IChangeEmailForm from './change-email-form.interface';
 
 import { USERS_API_ROUTES } from '@/common/constants/api-routes/users';
 import ApiServise from '@/common/services/api.service';
-import IChangeEmailDto from '@/common/types/dto/change-email.interface';
+import IChangeEmailDto from '@/common/types/dto/users/change-email.interface';
 import TextField from '@/common/ui/fields/text-field';
 import AccordionForm from '@/common/ui/forms/accordion-form';
 import { HTTPError } from '@/errors/http-error';

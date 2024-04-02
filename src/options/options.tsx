@@ -9,7 +9,7 @@ import ChangePasswordForm from './change-password-form';
 
 import ApiServise from '@/common/services/api.service';
 import { USERS_API_ROUTES } from '@/common/constants/api-routes/users';
-import IUserInfoDto from '@/common/types/dto/user-info.interface';
+import IUserInfoDto from '@/common/types/dto/users/user-info.interface';
 import { HTTPError } from '@/errors/http-error';
 
 const OptionsPage = (): JSX.Element => {

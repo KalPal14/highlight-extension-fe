@@ -9,7 +9,7 @@ import ApiServise from '@/common/services/api.service';
 import TextField from '@/common/ui/fields/text-field';
 import AccordionForm from '@/common/ui/forms/accordion-form';
 import { HTTPError } from '@/errors/http-error';
-import IChangeUsernameDto from '@/common/types/dto/change-username.interface';
+import IChangeUsernameDto from '@/common/types/dto/users/change-username.interface';
 
 export interface IChangeusernameFormProps {
 	currentUsername: string;

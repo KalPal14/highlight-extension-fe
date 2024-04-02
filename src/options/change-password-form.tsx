@@ -10,7 +10,7 @@ import ApiServise from '@/common/services/api.service';
 import TextField from '@/common/ui/fields/text-field';
 import AccordionForm from '@/common/ui/forms/accordion-form';
 import { HTTPError } from '@/errors/http-error';
-import IChangePasswordDto from '@/common/types/dto/change-password.interface';
+import IChangePasswordDto from '@/common/types/dto/users/change-password.interface';
 
 export interface IChangePasswordFormProps {
 	passwordUpdatedAt: string | null;
