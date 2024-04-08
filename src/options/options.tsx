@@ -6,21 +6,23 @@ import './options.scss';
 import ChangeEmailForm from './change-email-form';
 import ChangeUsernameForm from './change-username-form';
 import ChangePasswordForm from './change-password-form';
+import ChangeColorsForm from './change-colors-form';
 
 import ApiServise from '@/common/services/api.service';
 import { USERS_API_ROUTES } from '@/common/constants/api-routes/users';
-import IUserInfoDto from '@/common/types/dto/users/user-info.interface';
+import IGetUserInfoDto from '@/common/types/dto/users//get-user-info.interface';
 import { HTTPError } from '@/errors/http-error';
+import { DEF_COLORS } from '@/common/constants/colors';
 
 const OptionsPage = (): JSX.Element => {
-	const [userInfo, setUserInfo] = useState<IUserInfoDto | null>(null);
+	const [userInfo, setUserInfo] = useState<IGetUserInfoDto | null>(null);
 
 	useEffect(() => {
 		getUserInfo();
 	}, []);
 
 	async function getUserInfo(): Promise<void> {
-		const resp = await new ApiServise().get<null, IUserInfoDto>(USERS_API_ROUTES.getUserInfo);
+		const resp = await new ApiServise().get<null, IGetUserInfoDto>(USERS_API_ROUTES.getUserInfo);
 		if (resp instanceof HTTPError) return;
 		setUserInfo(resp);
 	}
@@ -78,6 +80,15 @@ const OptionsPage = (): JSX.Element => {
 								setUserInfo({
 									...userInfo,
 									passwordUpdatedAt,
+								})
+							}
+						/>
+						<ChangeColorsForm
+							currentColors={userInfo.colors.length ? userInfo.colors : DEF_COLORS}
+							onSuccess={(colors) =>
+								setUserInfo({
+									...userInfo,
+									colors,
 								})
 							}
 						/>

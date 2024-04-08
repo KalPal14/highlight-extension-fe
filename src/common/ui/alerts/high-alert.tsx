@@ -4,9 +4,11 @@ import cl from 'classnames';
 
 import './alerts.scss';
 
+import TJsxContent from '@/common/types/jsx-content.type';
+
 export interface IHighAlertProps {
-	title: JSX.Element | string;
-	description: JSX.Element | string;
+	title: TJsxContent;
+	description: TJsxContent;
 	status?: 'success' | 'info' | 'warning' | 'error' | 'loading';
 	className?: string;
 }

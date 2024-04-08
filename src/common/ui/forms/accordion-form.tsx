@@ -14,12 +14,13 @@ import {
 import { FieldValues, UseFormReturn } from 'react-hook-form';
 
 import './forms.scss';
+import TJsxContent from '@/common/types/jsx-content.type';
 
 export interface IAccordionFormProps<Form extends FieldValues> {
 	children: JSX.Element;
 	useFormReturnValue: UseFormReturn<Form>;
 	onSubmitHandler: (formValue: Form) => Promise<boolean>;
-	accordionButtonText: string;
+	accordionButtonText: TJsxContent;
 	tooltipLabel?: string;
 	labelText?: string;
 }

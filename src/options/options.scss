@@ -4,4 +4,24 @@
    &_userInfoSection {
       max-width: 425px;
    }
+
+   &_colors {
+      display: flex;
+   }
+
+   &_colorsItem {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      margin-right: 4px;
+   }
+
+   &_colorFormControl {
+      display: flex;
+      padding: 0 6px;
+   }
+
+   &_colorInput {
+      height: 32px !important;
+   }
 }
