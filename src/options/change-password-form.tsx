@@ -82,7 +82,7 @@ export default function ChangePasswordForm({
 			useFormReturnValue={useFormReturnValue}
 			onSubmitHandler={onSubmit}
 			accordionButtonText={accordionButtonText}
-			tooltipLabel="edit"
+			tooltipLabel="Edit"
 			labelText="Password"
 		>
 			<>

@@ -76,7 +76,7 @@ export default function ChangeUsernameForm({
 			useFormReturnValue={useFormReturnValue}
 			onSubmitHandler={onSubmit}
 			accordionButtonText={currentUsername}
-			tooltipLabel="edit"
+			tooltipLabel="Edit"
 			labelText="Username"
 		>
 			<>

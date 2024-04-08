@@ -1,5 +1,5 @@
 import React from 'react';
-import { CloseIcon, EditIcon } from '@chakra-ui/icons';
+import { ChevronUpIcon, EditIcon } from '@chakra-ui/icons';
 import {
 	Accordion,
 	AccordionItem,
@@ -44,13 +44,9 @@ export default function AccordionForm<Form extends FieldValues>({
 	async function onSubmit(formValue: Form): Promise<void> {
 		const isSuccess = await onSubmitHandler(formValue);
 		if (isSuccess) {
-			toggleAccordion();
+			reset();
+			setIsNeedToExpand.off();
 		}
-	}
-
-	function toggleAccordion(): void {
-		reset();
-		setIsNeedToExpand.toggle();
 	}
 
 	return (
@@ -69,11 +65,11 @@ export default function AccordionForm<Form extends FieldValues>({
 				{({ isExpanded }) => (
 					<>
 						<Tooltip
-							label={tooltipLabel}
+							label={!isExpanded && tooltipLabel}
 							fontSize="md"
 							placement="top-end"
 						>
-							<AccordionButton onClick={toggleAccordion}>
+							<AccordionButton onClick={setIsNeedToExpand.toggle}>
 								<Box
 									as="span"
 									flex="1"
@@ -81,7 +77,7 @@ export default function AccordionForm<Form extends FieldValues>({
 								>
 									{accordionButtonText}
 								</Box>
-								{isExpanded ? <CloseIcon /> : <EditIcon />}
+								{isExpanded ? <ChevronUpIcon /> : <EditIcon />}
 							</AccordionButton>
 						</Tooltip>
 						<AccordionPanel pb={4}>
@@ -89,8 +85,12 @@ export default function AccordionForm<Form extends FieldValues>({
 								{children}
 								<div className="accordionForm_formBtnsContainer">
 									<Button
-										onClick={toggleAccordion}
-										colorScheme="red"
+										onClick={() => {
+											reset();
+											setIsNeedToExpand.off();
+										}}
+										colorScheme="gray"
+										variant="outline"
 									>
 										Cancel
 									</Button>
@@ -100,7 +100,7 @@ export default function AccordionForm<Form extends FieldValues>({
 										isLoading={isSubmitting}
 										type="submit"
 									>
-										Submit
+										Save
 									</Button>
 								</div>
 							</form>

@@ -107,7 +107,7 @@ export default function ChangeColorsForm({
 			useFormReturnValue={useFormReturnValue}
 			onSubmitHandler={onSubmit}
 			accordionButtonText={accordionButtonText}
-			tooltipLabel="edit"
+			tooltipLabel="Edit"
 			labelText="Highlighter colors"
 		>
 			<SortableFields
