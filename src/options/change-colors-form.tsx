@@ -34,17 +34,12 @@ export default function ChangeColorsForm({
 			colors: currentColors,
 		},
 	});
-	const { register, control, setError, reset } = useFormReturnValue;
+	const { register, control, setError } = useFormReturnValue;
 	const useFieldArrayReturn = useFieldArray({
 		control,
 		name: 'colors',
 	});
 	const { fields } = useFieldArrayReturn;
-
-	function afterRemovalColor(_: number): void {
-		if (fields.length > 1) return;
-		reset();
-	}
 
 	async function onSubmit(formValues: IChangeColorsForm): Promise<boolean> {
 		const newColors = formValues.colors.map(({ color }) => color);
@@ -112,9 +107,13 @@ export default function ChangeColorsForm({
 		>
 			<SortableFields
 				useFieldArrayReturn={useFieldArrayReturn}
-				showAddBtn={true}
+				addBtn={{
+					text: '+ Add color',
+					value: {
+						color: '#718096',
+					},
+				}}
 				showDeleteBtn={true}
-				afterRemoval={afterRemovalColor}
 				fieldsList={fields.map((field, index) => (
 					<ColorField
 						key={field.id}
