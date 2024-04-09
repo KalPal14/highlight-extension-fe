@@ -10,6 +10,7 @@ import IChangeEmailDto from '@/common/types/dto/users/change-email.interface';
 import TextField from '@/common/ui/fields/text-field';
 import AccordionForm from '@/common/ui/forms/accordion-form';
 import { HTTPError } from '@/errors/http-error';
+import httpErrHandler from '@/errors/http-err-handler.helper';
 
 export interface IChangeEmailFormProps {
 	currentEmail: string;
@@ -39,7 +40,7 @@ export default function ChangeEmailForm({
 			formValues
 		);
 		if (resp instanceof HTTPError) {
-			handleFormRespErrors(resp);
+			handleErr(resp);
 			return false;
 		}
 		onSuccess(resp.email);
@@ -50,27 +51,29 @@ export default function ChangeEmailForm({
 		return true;
 	}
 
-	function handleFormRespErrors(resp: HTTPError): void {
-		if (Array.isArray(resp.payload)) {
-			resp.payload.forEach(({ property, errors }) =>
+	function handleErr(err: HTTPError): void {
+		httpErrHandler({
+			err,
+			onValidationErr(property, errors) {
 				setError(property as keyof IChangeEmailForm, {
 					message: errors.join(),
-				})
-			);
-			return;
-		}
-		if (typeof resp.payload !== 'string') {
-			toast({
-				title: 'Failed to change email',
-				description: resp.payload.err,
-			});
-			return;
-		}
-		toast({
-			title: 'Failed to change email',
-			description: 'Something went wrong. Please try again',
+				});
+			},
+			onErrWithMsg(msg) {
+				toast({
+					title: 'Failed to change email',
+					description: msg,
+				});
+			},
+			onUnhandledErr() {
+				toast({
+					title: 'Failed to change email',
+					description: 'Something went wrong. Please try again',
+				});
+			},
 		});
 	}
+
 	return (
 		<AccordionForm
 			useFormReturnValue={useFormReturnValue}

@@ -13,6 +13,7 @@ import IUpdateUserRo from '@/common/types/ro/users/update-user.interface';
 import IUpdateUserDto from '@/common/types/dto/users/update-user.interface';
 import { HTTPError } from '@/errors/http-error';
 import IColor from '@/common/types/color.interface';
+import httpErrHandler from '@/errors/http-err-handler.helper';
 
 export interface IChangeColorsFormProps {
 	currentColors: IColor[];
@@ -50,7 +51,7 @@ export default function ChangeColorsForm({
 			}
 		);
 		if (resp instanceof HTTPError) {
-			handleFormRespErrors(resp);
+			handleErr(resp);
 			return false;
 		}
 		toast({
@@ -61,25 +62,26 @@ export default function ChangeColorsForm({
 		return true;
 	}
 
-	function handleFormRespErrors(resp: HTTPError): void {
-		if (Array.isArray(resp.payload)) {
-			resp.payload.forEach(({ property, errors }) =>
+	function handleErr(err: HTTPError): void {
+		httpErrHandler({
+			err,
+			onValidationErr(property, errors) {
 				setError(property as keyof IChangeColorsForm, {
 					message: errors.join(),
-				})
-			);
-			return;
-		}
-		if (typeof resp.payload !== 'string') {
-			toast({
-				title: 'Failed to change colors',
-				description: resp.payload.err,
-			});
-			return;
-		}
-		toast({
-			title: 'Failed to change colors',
-			description: 'Something went wrong. Please try again',
+				});
+			},
+			onErrWithMsg(msg) {
+				toast({
+					title: 'Failed to change colors',
+					description: msg,
+				});
+			},
+			onUnhandledErr() {
+				toast({
+					title: 'Failed to change colors',
+					description: 'Something went wrong. Please try again',
+				});
+			},
 		});
 	}
 

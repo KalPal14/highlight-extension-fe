@@ -11,6 +11,7 @@ import { HTTPError } from '@/errors/http-error';
 import TextField from '@/common/ui/fields/text-field';
 import OutsideClickAlert from '@/common/ui/alerts/outside-click-alert';
 import { USERS_API_ROUTES } from '@/common/constants/api-routes/users';
+import httpErrHandler from '@/errors/http-err-handler.helper';
 
 export interface ILoginFormProps {
 	onSuccess: () => void;
@@ -29,26 +30,28 @@ export default function LoginForm({ onSuccess }: ILoginFormProps): JSX.Element {
 	async function onSubmit(formValues: ILoginForm): Promise<void> {
 		const resp = await new ApiServise().post(USERS_API_ROUTES.login, formValues);
 		if (resp instanceof HTTPError) {
-			handleFormRespErrors(resp);
+			handleErr(resp);
 			return;
 		}
 		onSuccess();
 	}
 
-	function handleFormRespErrors(resp: HTTPError): void {
-		if (Array.isArray(resp.payload)) {
-			resp.payload.forEach(({ property, errors }) =>
+	function handleErr(err: HTTPError): void {
+		httpErrHandler({
+			err,
+			onValidationErr(property, errors) {
 				setError(property as keyof ILoginForm, {
 					message: errors.join(),
-				})
-			);
-			return;
-		}
-		if (typeof resp.payload !== 'string') {
-			setErrAlertMsg(resp.payload.err);
-			return;
-		}
-		setErrAlertMsg('Something went wrong. Please try again');
+				});
+			},
+			onErrWithMsg(msg) {
+				setErrAlertMsg(msg);
+				return;
+			},
+			onUnhandledErr() {
+				setErrAlertMsg('Something went wrong. Please try again');
+			},
+		});
 	}
 
 	function closeErrAlert(): void {

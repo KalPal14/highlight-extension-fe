@@ -10,6 +10,7 @@ import TextField from '@/common/ui/fields/text-field';
 import AccordionForm from '@/common/ui/forms/accordion-form';
 import { HTTPError } from '@/errors/http-error';
 import IChangeUsernameDto from '@/common/types/dto/users/change-username.interface';
+import httpErrHandler from '@/errors/http-err-handler.helper';
 
 export interface IChangeusernameFormProps {
 	currentUsername: string;
@@ -39,7 +40,7 @@ export default function ChangeUsernameForm({
 			formValues
 		);
 		if (resp instanceof HTTPError) {
-			handleFormRespErrors(resp);
+			handleErr(resp);
 			return false;
 		}
 		onSuccess(resp.username);
@@ -50,27 +51,29 @@ export default function ChangeUsernameForm({
 		return true;
 	}
 
-	function handleFormRespErrors(resp: HTTPError): void {
-		if (Array.isArray(resp.payload)) {
-			resp.payload.forEach(({ property, errors }) =>
+	function handleErr(err: HTTPError): void {
+		httpErrHandler({
+			err,
+			onValidationErr(property, errors) {
 				setError(property as keyof IChangeUsernameForm, {
 					message: errors.join(),
-				})
-			);
-			return;
-		}
-		if (typeof resp.payload !== 'string') {
-			toast({
-				title: 'Failed to change username',
-				description: resp.payload.err,
-			});
-			return;
-		}
-		toast({
-			title: 'Failed to change username',
-			description: 'Something went wrong. Please try again',
+				});
+			},
+			onErrWithMsg(msg) {
+				toast({
+					title: 'Failed to change username',
+					description: msg,
+				});
+			},
+			onUnhandledErr() {
+				toast({
+					title: 'Failed to change username',
+					description: 'Something went wrong. Please try again',
+				});
+			},
 		});
 	}
+
 	return (
 		<AccordionForm
 			useFormReturnValue={useFormReturnValue}
