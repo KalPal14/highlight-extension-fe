@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Text, Heading } from '@chakra-ui/react';
+import { Text, Heading, ScaleFade } from '@chakra-ui/react';
 
 import './login.scss';
 import LoginForm from './login-form';
@@ -53,12 +53,17 @@ export default function LoginPage(): JSX.Element {
 				</section>
 			)}
 			{Boolean(highAlert) && (
-				<HighAlert
-					title={highAlert!.title}
-					description={highAlert!.description}
-					status={highAlert?.status}
+				<ScaleFade
+					initialScale={0.9}
+					in={Boolean(highAlert)}
 					className="loginPage_alert"
-				/>
+				>
+					<HighAlert
+						title={highAlert!.title}
+						description={highAlert!.description}
+						status={highAlert?.status}
+					/>
+				</ScaleFade>
 			)}
 		</div>
 	);

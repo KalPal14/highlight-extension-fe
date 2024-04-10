@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Button } from '@chakra-ui/react';
+import { Button, Collapse } from '@chakra-ui/react';
 
 import './login.scss';
 
@@ -78,13 +78,16 @@ export default function LoginForm({ onSuccess }: ILoginFormProps): JSX.Element {
 				placeholder="Please enter your password"
 				type="password"
 			/>
-			{errAlerMsg && (
+			<Collapse
+				in={Boolean(errAlerMsg)}
+				animateOpacity
+			>
 				<OutsideClickAlert
-					msg={errAlerMsg}
+					msg={errAlerMsg ?? ''}
 					onClose={closeErrAlert}
 					mb={5}
 				/>
-			)}
+			</Collapse>
 			<Button
 				mt={2}
 				colorScheme="teal"
