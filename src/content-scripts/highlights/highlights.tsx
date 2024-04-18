@@ -5,19 +5,26 @@ import findTextToHighlight from './helpers/find-text-to-highlight.helper';
 import INodeInRangeTextContent from './types/node-in-range-text-content.interface';
 
 export default function Highlights(): JSX.Element {
-	const [range, setRange] = useState<Range>();
+	const [range, setRange] = useState<Range | null>(null);
 
 	useEffect(() => {
-		document.addEventListener('mouseup', ({ target }): void => {
-			if ((target as HTMLElement).id === 'highlights_div') return;
+		document.addEventListener('mouseup', selectionHandler);
 
-			const newSelection = document.getSelection();
-			if (!newSelection) return;
-
-			const newRange = newSelection.getRangeAt(0);
-			setRange(newRange);
-		});
+		return () => window.removeEventListener('mouseup', selectionHandler);
 	}, []);
+
+	function selectionHandler({ target }: MouseEvent): void {
+		if ((target as HTMLElement).className.includes('highlighController')) return;
+
+		const newSelection = document.getSelection();
+		if (!newSelection || newSelection.type !== 'Range') {
+			setRange(null);
+			return;
+		}
+
+		const newRange = newSelection.getRangeAt(0);
+		setRange(newRange);
+	}
 
 	function createHighlight(): void {
 		if (!range) return;
@@ -34,6 +41,7 @@ export default function Highlights(): JSX.Element {
 			}
 			wrapTextWithHighlighter(node, textContent);
 		});
+		setRange(null);
 	}
 
 	function removeExtraLetterFromRange({
@@ -75,9 +83,8 @@ export default function Highlights(): JSX.Element {
 	if (range) {
 		return (
 			<div
-				id="highlights_div"
 				onClick={createHighlight}
-				className="highlights_div"
+				className="highlighController"
 			></div>
 		);
 	}

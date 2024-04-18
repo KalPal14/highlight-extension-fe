@@ -6,11 +6,7 @@
    border: none;
 }
 
-.highlights {
-   display: flex;
-   justify-content: center;
-
-   &_div {
+.highlighController {
       background-color: rgb(86, 86, 86);
       width: 20px;
       height: 20px;
@@ -20,5 +16,4 @@
       bottom: 5%;
       right: 5%;
       z-index: 999;
-   }
 }
