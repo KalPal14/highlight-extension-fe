@@ -47,9 +47,7 @@ export default function Highlights(): JSX.Element {
 		const nodesInRangeList = findTextToHighlight(range.commonAncestorContainer, range);
 
 		nodesInRangeList.forEach(({ node, textContent }, index) => {
-			// This must be done because the built-in range method 'comparePoint'
-			// assigns an extra letter to the last element
-			if (index === nodesInRangeList.length - 1) {
+			if (index === nodesInRangeList.length - 1 && !textContent.isAllInRange) {
 				const lastNodeText = removeExtraLetterFromRange(textContent);
 				wrapTextWithHighlighter(node, lastNodeText, color);
 				return;

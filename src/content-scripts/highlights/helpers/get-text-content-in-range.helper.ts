@@ -15,7 +15,7 @@ export default function getTextContentInRange(
 
 	if (isAllTextInRange(textNode, range)) {
 		strInRange = textNode.textContent;
-		return { strBeforeRange, strInRange, strAfterRange };
+		return { strBeforeRange, strInRange, strAfterRange, isAllInRange: true };
 	}
 
 	for (let i = 0; i < textNode.textContent.length; i++) {
