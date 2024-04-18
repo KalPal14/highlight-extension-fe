@@ -4,9 +4,15 @@
    margin: 0;
    padding: 0;
    border: none;
-}
 
-.highlighController {
+   div {
+      margin: 0;
+      padding: 0;
+      border: none;
+      border-radius: 0;
+   }
+
+   .highlighController {
       z-index: 999;
       position: fixed;
       bottom: 5%;
@@ -28,4 +34,5 @@
             height: 24px;
             border-radius: 50%;
       }
+}
 }
