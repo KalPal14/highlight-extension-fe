@@ -7,13 +7,25 @@
 }
 
 .highlighController {
-      background-color: rgb(86, 86, 86);
-      width: 20px;
-      height: 20px;
-      padding: 0;
-      margin: 0;
+      z-index: 999;
       position: fixed;
       bottom: 5%;
       right: 5%;
-      z-index: 999;
+      width: fit-content;
+      height: fit-content;
+      display: flex;
+      flex-direction: row;
+      padding: 12px 8px;
+      margin: 0;
+      border-radius: 10px;
+      background-color: #4a4a4a;
+      border: 1px solid #fff;
+      box-shadow: rgba(255, 255, 255, 0.2) 0px 2px 8px 0px;
+
+      &_color {
+            margin: 0 2px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+      }
 }
