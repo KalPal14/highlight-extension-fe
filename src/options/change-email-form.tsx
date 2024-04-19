@@ -39,10 +39,13 @@ export default function ChangeEmailForm({
 			USERS_API_ROUTES.changeEmail,
 			formValues
 		);
+
 		if (resp instanceof HTTPError) {
 			handleErr(resp);
 			return false;
 		}
+
+		localStorage.setItem('token', resp.jwt);
 		onSuccess(resp.email);
 		toast({
 			title: 'Email has been successfully changed',

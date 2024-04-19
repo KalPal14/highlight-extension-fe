@@ -28,12 +28,16 @@ export default function LoginForm({ onSuccess }: IRegistrationFormProps): JSX.El
 	const [errAlerMsg, setErrAlertMsg] = useState<string | null>(null);
 
 	async function onSubmit(formValues: IRegistrationForm): Promise<void> {
-		const resp = await new ApiServise().post(USERS_API_ROUTES.register, formValues);
+		const resp = await new ApiServise().post<IRegistrationForm, any>(
+			USERS_API_ROUTES.register,
+			formValues
+		);
 		if (resp instanceof HTTPError) {
 			handleErr(resp);
 			return;
 		}
 		onSuccess();
+		localStorage.setItem('token', resp.jwt);
 	}
 
 	function handleErr(err: HTTPError): void {

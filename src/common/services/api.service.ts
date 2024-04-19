@@ -18,6 +18,7 @@ export default class ApiServise implements IApiServise {
 			baseURL: this.baseUrl,
 			headers: {
 				'Content-Type': 'application/json; charset=utf-8',
+				Authorization: `Bearer ${localStorage.getItem('token')}`,
 			},
 			withCredentials: true,
 		});

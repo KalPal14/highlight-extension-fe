@@ -28,12 +28,13 @@ export default function LoginForm({ onSuccess }: ILoginFormProps): JSX.Element {
 	const [errAlerMsg, setErrAlertMsg] = useState<string | null>(null);
 
 	async function onSubmit(formValues: ILoginForm): Promise<void> {
-		const resp = await new ApiServise().post(USERS_API_ROUTES.login, formValues);
+		const resp = await new ApiServise().post<ILoginForm, any>(USERS_API_ROUTES.login, formValues);
 		if (resp instanceof HTTPError) {
 			handleErr(resp);
 			return;
 		}
 		onSuccess();
+		localStorage.setItem('token', resp.jwt);
 	}
 
 	function handleErr(err: HTTPError): void {

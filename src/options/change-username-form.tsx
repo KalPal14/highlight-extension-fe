@@ -39,10 +39,13 @@ export default function ChangeUsernameForm({
 			USERS_API_ROUTES.changeUsername,
 			formValues
 		);
+
 		if (resp instanceof HTTPError) {
 			handleErr(resp);
 			return false;
 		}
+
+		localStorage.setItem('token', resp.jwt);
 		onSuccess(resp.username);
 		toast({
 			title: 'Username has been successfully changed',

@@ -6,7 +6,6 @@ import './registration.scss';
 import RegistrationForm from './registration-form';
 
 import { TABS_ROUTES } from '@/common/constants/routes/tabs';
-import { getCookie } from '@/common/services/cookies.service';
 import HighAlert, { IHighAlertProps } from '@/common/ui/alerts/high-alert';
 
 export default function RegistrationPage(): JSX.Element {
@@ -16,8 +15,8 @@ export default function RegistrationPage(): JSX.Element {
 		loginCheck();
 	}, []);
 
-	async function loginCheck(): Promise<void> {
-		const isLoggedIn = await getCookie('token');
+	function loginCheck(): void {
+		const isLoggedIn = localStorage.getItem('token');
 		if (isLoggedIn) {
 			setHighAlert({
 				title: 'You are logged in',

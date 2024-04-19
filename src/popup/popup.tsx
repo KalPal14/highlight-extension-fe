@@ -6,7 +6,6 @@ import './popup.scss';
 
 import LoginSection from './login-section';
 
-import { getCookie } from '@/common/services/cookies.service';
 import ApiServise from '@/common/services/api.service';
 import { USERS_API_ROUTES } from '@/common/constants/api-routes/users';
 import { HTTPError } from '@/errors/http-error';
@@ -20,8 +19,8 @@ export default function Popup(): JSX.Element {
 		loginCheck();
 	}, []);
 
-	async function loginCheck(): Promise<void> {
-		const jwtToken = await getCookie('token');
+	function loginCheck(): void {
+		const jwtToken = localStorage.getItem('token');
 		setIsLoggedIn(Boolean(jwtToken));
 	}
 
