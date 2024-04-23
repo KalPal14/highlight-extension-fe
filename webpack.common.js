@@ -23,6 +23,7 @@ module.exports = {
 		options: path.resolve('src/options/index.tsx'),
 		highlights: path.resolve('src/content-scripts/highlights/index.tsx'),
 		tabs: path.resolve('src/tabs/index.tsx'),
+		service_worker: path.resolve('src/service-worker/index.ts'),
 	},
 	module: {
 		rules: [

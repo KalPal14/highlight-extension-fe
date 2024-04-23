@@ -89,6 +89,7 @@ export default function Highlights(): JSX.Element {
 		span.style.backgroundColor = color;
 		span.addEventListener('click', () => {
 			console.log('You clicked on the highlighter!');
+			chrome.runtime.sendMessage({ type: 'apiRequest' });
 		});
 		span.innerText = textToHighlight;
 		return span;
