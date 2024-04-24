@@ -44,7 +44,9 @@ export default function ChangeUsernameForm({
 			return false;
 		}
 
-		localStorage.setItem('token', resp.jwt);
+		await chrome.storage.local.set({
+			token: resp.jwt,
+		});
 		onSuccess(resp.username);
 		toast({
 			title: 'Username has been successfully changed',

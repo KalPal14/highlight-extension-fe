@@ -18,7 +18,10 @@ const OptionsPage = (): JSX.Element => {
 	const [userInfo, setUserInfo] = useState<IGetUserInfoDto | null>(null);
 
 	useEffect(() => {
+		chrome.storage.onChanged.addListener(getUserInfo);
 		getUserInfo();
+
+		return () => chrome.storage.onChanged.removeListener(getUserInfo);
 	}, []);
 
 	async function getUserInfo(): Promise<void> {
@@ -50,8 +53,7 @@ const OptionsPage = (): JSX.Element => {
 						mt={3}
 					>
 						<AlertIcon />
-						Sorry. We were unable to load your information. Make sure you are logged in and refresh
-						the page.
+						Sorry. We were unable to load your information. Make sure you are logged in.
 					</Alert>
 				)}
 				{userInfo && (

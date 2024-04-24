@@ -1,3 +1,7 @@
+import { USERS_API_ROUTES } from '@/common/constants/api-routes/users';
+import ApiServise from '@/common/services/api.service';
+
 chrome.runtime.onMessage.addListener(async function () {
-	console.log('this message from send-api-request.ts');
+	const resp = await new ApiServise().get(USERS_API_ROUTES.getUserInfo);
+	console.log(resp);
 });

@@ -12,25 +12,21 @@ export default function RegistrationPage(): JSX.Element {
 	const [highAlert, setHighAlert] = useState<IHighAlertProps | null>(null);
 
 	useEffect(() => {
+		chrome.storage.onChanged.addListener(loginCheck);
 		loginCheck();
+
+		return () => chrome.storage.onChanged.removeListener(loginCheck);
 	}, []);
 
-	function loginCheck(): void {
-		const isLoggedIn = localStorage.getItem('token');
-		if (isLoggedIn) {
+	async function loginCheck(): Promise<void> {
+		const { token } = await chrome.storage.local.get('token');
+		if (token) {
 			setHighAlert({
-				title: 'You are logged in',
-				description: 'To register a new account, please log out of the current one',
-				status: 'info',
+				title: 'You have successfully registered',
+				description:
+					'You can close this tab. To register a new account, please log out of the current on',
 			});
 		}
-	}
-
-	function onSuccessRegistration(): void {
-		setHighAlert({
-			title: 'You have successfully registered',
-			description: 'You can close this tab',
-		});
 	}
 
 	return (
@@ -48,7 +44,7 @@ export default function RegistrationPage(): JSX.Element {
 							<Link to={TABS_ROUTES.login}>Please login here</Link>
 						</Text>
 					</Text>
-					<RegistrationForm onSuccess={onSuccessRegistration} />
+					<RegistrationForm />
 				</section>
 			)}
 			{Boolean(highAlert) && (

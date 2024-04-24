@@ -12,25 +12,23 @@ export default function LoginPage(): JSX.Element {
 	const [highAlert, setHighAlert] = useState<IHighAlertProps | null>(null);
 
 	useEffect(() => {
+		chrome.storage.onChanged.addListener(loginCheck);
 		loginCheck();
+
+		return () => chrome.storage.onChanged.removeListener(loginCheck);
 	}, []);
 
-	function loginCheck(): void {
-		const isLoggedIn = localStorage.getItem('token');
-		if (isLoggedIn) {
+	async function loginCheck(): Promise<void> {
+		const { token } = await chrome.storage.local.get('token');
+		if (token) {
 			setHighAlert({
-				title: 'You are already logged in to your account',
-				description: 'To log in to another account, log out of the current one',
-				status: 'info',
+				title: 'You have successfully logged in',
+				description:
+					'You can close this tab. To log in to another account, log out of the current one',
 			});
+			return;
 		}
-	}
-
-	function onSuccessLogin(): void {
-		setHighAlert({
-			title: 'You have successfully logged in',
-			description: 'You can close this tab',
-		});
+		setHighAlert(null);
 	}
 
 	return (
@@ -48,7 +46,7 @@ export default function LoginPage(): JSX.Element {
 							<Link to={TABS_ROUTES.registration}>Please register</Link>
 						</Text>
 					</Text>
-					<LoginForm onSuccess={onSuccessLogin} />
+					<LoginForm />
 				</section>
 			)}
 			{Boolean(highAlert) && (

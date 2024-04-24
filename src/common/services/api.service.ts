@@ -16,7 +16,6 @@ export default class ApiServise implements IApiServise {
 			...initRequest,
 			headers: {
 				'Content-Type': 'application/json; charset=utf-8',
-				Authorization: `Bearer ${localStorage.getItem('token')}`,
 				...initRequest?.headers,
 			},
 		};
@@ -36,9 +35,14 @@ export default class ApiServise implements IApiServise {
 
 	async get<RO extends TRoLimiter, DTO>(url: string, data?: RO): Promise<DTO | HTTPError> {
 		try {
+			const { token } = await chrome.storage.local.get('token');
 			const params = data ? `?${this.createSearchParams(data)}` : '';
 			const resp = await fetch(`${this.baseUrl}${url}${params}`, {
 				...this.initRequest,
+				headers: {
+					...this.initRequest.headers,
+					Authorization: `Bearer ${token}`,
+				},
 				method: 'GET',
 			});
 			if (resp.ok) {
@@ -56,8 +60,13 @@ export default class ApiServise implements IApiServise {
 		data?: RO
 	): Promise<DTO | HTTPError> {
 		try {
+			const { token } = await chrome.storage.local.get('token');
 			const resp = await fetch(`${this.baseUrl}${url}`, {
 				...this.initRequest,
+				headers: {
+					...this.initRequest.headers,
+					Authorization: `Bearer ${token}`,
+				},
 				method,
 				body: JSON.stringify(data),
 			});

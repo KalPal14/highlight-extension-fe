@@ -13,11 +13,7 @@ import { USERS_API_ROUTES } from '@/common/constants/api-routes/users';
 import httpErrHandler from '@/errors/http-err-handler.helper';
 import IRegistrationDto from '@/common/types/dto/users/registration.interface';
 
-export interface IRegistrationFormProps {
-	onSuccess: () => void;
-}
-
-export default function LoginForm({ onSuccess }: IRegistrationFormProps): JSX.Element {
+export default function LoginForm(): JSX.Element {
 	const {
 		handleSubmit,
 		register,
@@ -36,8 +32,10 @@ export default function LoginForm({ onSuccess }: IRegistrationFormProps): JSX.El
 			handleErr(resp);
 			return;
 		}
-		onSuccess();
-		localStorage.setItem('token', resp.jwt);
+
+		await chrome.storage.local.set({
+			token: resp.jwt,
+		});
 	}
 
 	function handleErr(err: HTTPError): void {

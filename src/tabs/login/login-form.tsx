@@ -13,11 +13,7 @@ import { USERS_API_ROUTES } from '@/common/constants/api-routes/users';
 import httpErrHandler from '@/errors/http-err-handler.helper';
 import ILoginDto from '@/common/types/dto/users/login.interface';
 
-export interface ILoginFormProps {
-	onSuccess: () => void;
-}
-
-export default function LoginForm({ onSuccess }: ILoginFormProps): JSX.Element {
+export default function LoginForm(): JSX.Element {
 	const {
 		handleSubmit,
 		register,
@@ -36,8 +32,10 @@ export default function LoginForm({ onSuccess }: ILoginFormProps): JSX.Element {
 			handleErr(resp);
 			return;
 		}
-		onSuccess();
-		localStorage.setItem('token', resp.jwt);
+
+		await chrome.storage.local.set({
+			token: resp.jwt,
+		});
 	}
 
 	function handleErr(err: HTTPError): void {

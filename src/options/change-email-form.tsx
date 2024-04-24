@@ -44,7 +44,9 @@ export default function ChangeEmailForm({
 			return false;
 		}
 
-		localStorage.setItem('token', resp.jwt);
+		await chrome.storage.local.set({
+			token: resp.jwt,
+		});
 		onSuccess(resp.email);
 		toast({
 			title: 'Email has been successfully changed',
