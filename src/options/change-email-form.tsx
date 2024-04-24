@@ -2,8 +2,7 @@ import React from 'react';
 import { useToast } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 
-import IChangeEmailForm from './change-email-form.interface';
-
+import TChangeEmailRo from '@/common/types/ro/users/change-email.type';
 import { USERS_API_ROUTES } from '@/common/constants/api-routes/users';
 import ApiServise from '@/common/services/api.service';
 import IChangeEmailDto from '@/common/types/dto/users/change-email.interface';
@@ -27,15 +26,15 @@ export default function ChangeEmailForm({
 		status: 'error',
 		position: 'top',
 	});
-	const useFormReturnValue = useForm<IChangeEmailForm>();
+	const useFormReturnValue = useForm<TChangeEmailRo>();
 	const {
 		register,
 		formState: { errors },
 		setError,
 	} = useFormReturnValue;
 
-	async function onSubmit(formValues: IChangeEmailForm): Promise<boolean> {
-		const resp = await new ApiServise().patch<IChangeEmailForm, IChangeEmailDto>(
+	async function onSubmit(formValues: TChangeEmailRo): Promise<boolean> {
+		const resp = await new ApiServise().patch<TChangeEmailRo, IChangeEmailDto>(
 			USERS_API_ROUTES.changeEmail,
 			formValues
 		);
@@ -58,7 +57,7 @@ export default function ChangeEmailForm({
 		httpErrHandler({
 			err,
 			onValidationErr(property, errors) {
-				setError(property as keyof IChangeEmailForm, {
+				setError(property as keyof TChangeEmailRo, {
 					message: errors.join(),
 				});
 			},

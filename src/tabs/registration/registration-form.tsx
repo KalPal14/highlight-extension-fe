@@ -4,14 +4,14 @@ import { Button, Collapse } from '@chakra-ui/react';
 
 import './registration.scss';
 
-import IRegistrationForm from './registration-form.interface';
-
+import TRegistrationRo from '@/common/types/ro/users/registration.type';
 import ApiServise from '@/common/services/api.service';
 import { HTTPError } from '@/errors/http-error';
 import TextField from '@/common/ui/fields/text-field';
 import OutsideClickAlert from '@/common/ui/alerts/outside-click-alert';
 import { USERS_API_ROUTES } from '@/common/constants/api-routes/users';
 import httpErrHandler from '@/errors/http-err-handler.helper';
+import IRegistrationDto from '@/common/types/dto/users/registration.interface';
 
 export interface IRegistrationFormProps {
 	onSuccess: () => void;
@@ -23,12 +23,12 @@ export default function LoginForm({ onSuccess }: IRegistrationFormProps): JSX.El
 		register,
 		formState: { errors, isSubmitting },
 		setError,
-	} = useForm<IRegistrationForm>();
+	} = useForm<TRegistrationRo>();
 
 	const [errAlerMsg, setErrAlertMsg] = useState<string | null>(null);
 
-	async function onSubmit(formValues: IRegistrationForm): Promise<void> {
-		const resp = await new ApiServise().post<IRegistrationForm, any>(
+	async function onSubmit(formValues: TRegistrationRo): Promise<void> {
+		const resp = await new ApiServise().post<TRegistrationRo, IRegistrationDto>(
 			USERS_API_ROUTES.register,
 			formValues
 		);
@@ -44,7 +44,7 @@ export default function LoginForm({ onSuccess }: IRegistrationFormProps): JSX.El
 		httpErrHandler({
 			err,
 			onValidationErr(property, errors) {
-				setError(property as keyof IRegistrationForm, {
+				setError(property as keyof TRegistrationRo, {
 					message: errors.join(),
 				});
 			},

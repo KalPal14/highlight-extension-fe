@@ -4,14 +4,14 @@ import { Button, Collapse } from '@chakra-ui/react';
 
 import './login.scss';
 
-import ILoginForm from './login-form.interface';
-
+import TLoginRo from '@/common/types/ro/users/login.type';
 import ApiServise from '@/common/services/api.service';
 import { HTTPError } from '@/errors/http-error';
 import TextField from '@/common/ui/fields/text-field';
 import OutsideClickAlert from '@/common/ui/alerts/outside-click-alert';
 import { USERS_API_ROUTES } from '@/common/constants/api-routes/users';
 import httpErrHandler from '@/errors/http-err-handler.helper';
+import ILoginDto from '@/common/types/dto/users/login.interface';
 
 export interface ILoginFormProps {
 	onSuccess: () => void;
@@ -23,12 +23,15 @@ export default function LoginForm({ onSuccess }: ILoginFormProps): JSX.Element {
 		register,
 		formState: { errors, isSubmitting },
 		setError,
-	} = useForm<ILoginForm>();
+	} = useForm<TLoginRo>();
 
 	const [errAlerMsg, setErrAlertMsg] = useState<string | null>(null);
 
-	async function onSubmit(formValues: ILoginForm): Promise<void> {
-		const resp = await new ApiServise().post<ILoginForm, any>(USERS_API_ROUTES.login, formValues);
+	async function onSubmit(formValues: TLoginRo): Promise<void> {
+		const resp = await new ApiServise().post<TLoginRo, ILoginDto>(
+			USERS_API_ROUTES.login,
+			formValues
+		);
 		if (resp instanceof HTTPError) {
 			handleErr(resp);
 			return;
@@ -41,7 +44,7 @@ export default function LoginForm({ onSuccess }: ILoginFormProps): JSX.Element {
 		httpErrHandler({
 			err,
 			onValidationErr(property, errors) {
-				setError(property as keyof ILoginForm, {
+				setError(property as keyof TLoginRo, {
 					message: errors.join(),
 				});
 			},

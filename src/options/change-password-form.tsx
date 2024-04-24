@@ -3,8 +3,7 @@ import { useToast } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import date from 'date-and-time';
 
-import IChangePasswordForm from './change-password-form.interface';
-
+import TChangePasswordRo from '@/common/types/ro/users/change-password-form.type';
 import { USERS_API_ROUTES } from '@/common/constants/api-routes/users';
 import ApiServise from '@/common/services/api.service';
 import TextField from '@/common/ui/fields/text-field';
@@ -28,15 +27,15 @@ export default function ChangePasswordForm({
 		status: 'error',
 		position: 'top',
 	});
-	const useFormReturnValue = useForm<IChangePasswordForm>();
+	const useFormReturnValue = useForm<TChangePasswordRo>();
 	const {
 		register,
 		formState: { errors },
 		setError,
 	} = useFormReturnValue;
 
-	async function onSubmit(formValues: IChangePasswordForm): Promise<boolean> {
-		const resp = await new ApiServise().patch<IChangePasswordForm, IChangePasswordDto>(
+	async function onSubmit(formValues: TChangePasswordRo): Promise<boolean> {
+		const resp = await new ApiServise().patch<TChangePasswordRo, IChangePasswordDto>(
 			USERS_API_ROUTES.changePassword,
 			formValues
 		);
@@ -56,7 +55,7 @@ export default function ChangePasswordForm({
 		httpErrHandler({
 			err,
 			onValidationErr(property, errors) {
-				setError(property as keyof IChangePasswordForm, {
+				setError(property as keyof TChangePasswordRo, {
 					message: errors.join(),
 				});
 			},

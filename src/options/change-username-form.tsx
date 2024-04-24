@@ -2,8 +2,7 @@ import React from 'react';
 import { useToast } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 
-import IChangeUsernameForm from './change-username-form.interface';
-
+import TChangeUsernameRo from '@/common/types/ro/users/change-username.type';
 import { USERS_API_ROUTES } from '@/common/constants/api-routes/users';
 import ApiServise from '@/common/services/api.service';
 import TextField from '@/common/ui/fields/text-field';
@@ -27,15 +26,15 @@ export default function ChangeUsernameForm({
 		status: 'error',
 		position: 'top',
 	});
-	const useFormReturnValue = useForm<IChangeUsernameForm>();
+	const useFormReturnValue = useForm<TChangeUsernameRo>();
 	const {
 		register,
 		formState: { errors },
 		setError,
 	} = useFormReturnValue;
 
-	async function onSubmit(formValues: IChangeUsernameForm): Promise<boolean> {
-		const resp = await new ApiServise().patch<IChangeUsernameForm, IChangeUsernameDto>(
+	async function onSubmit(formValues: TChangeUsernameRo): Promise<boolean> {
+		const resp = await new ApiServise().patch<TChangeUsernameRo, IChangeUsernameDto>(
 			USERS_API_ROUTES.changeUsername,
 			formValues
 		);
@@ -58,7 +57,7 @@ export default function ChangeUsernameForm({
 		httpErrHandler({
 			err,
 			onValidationErr(property, errors) {
-				setError(property as keyof IChangeUsernameForm, {
+				setError(property as keyof TChangeUsernameRo, {
 					message: errors.join(),
 				});
 			},
