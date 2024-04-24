@@ -34,7 +34,11 @@ export default function Highlights(): JSX.Element {
 		const nodesInRangeList = findTextToHighlight(range.commonAncestorContainer, range);
 
 		nodesInRangeList.forEach(({ node, textContent }, index) => {
-			if (index === nodesInRangeList.length - 1 && !textContent.isAllInRange) {
+			if (
+				nodesInRangeList.length > 1 &&
+				index === nodesInRangeList.length - 1 &&
+				!textContent.isAllInRange
+			) {
 				const lastNodeText = removeExtraLetterFromRange(textContent);
 				wrapTextWithHighlighter(node, lastNodeText, color);
 				return;
