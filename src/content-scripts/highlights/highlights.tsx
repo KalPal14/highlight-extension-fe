@@ -4,29 +4,16 @@ import './highlights.scss';
 import findTextToHighlight from './helpers/find-text-to-highlight.helper';
 import INodeInRangeTextContent from './types/node-in-range-text-content.interface';
 
-import { USERS_API_ROUTES } from '@/common/constants/api-routes/users';
-import ApiServise from '@/common/services/api.service';
-import IGetUserInfoDto from '@/common/types/dto/users/get-user-info.interface';
-import { HTTPError } from '@/errors/http-error';
 import { DEF_COLORS } from '@/common/constants/colors';
-import IColor from '@/common/types/color.interface';
 
 export default function Highlights(): JSX.Element {
-	const [colors, setColors] = useState<IColor[]>(DEF_COLORS);
 	const [range, setRange] = useState<Range | null>(null);
 
 	useEffect(() => {
-		getUserInfo();
 		document.addEventListener('mouseup', selectionHandler);
 
 		return () => window.removeEventListener('mouseup', selectionHandler);
 	}, []);
-
-	async function getUserInfo(): Promise<void> {
-		const resp = await new ApiServise().get<null, IGetUserInfoDto>(USERS_API_ROUTES.getUserInfo);
-		if (resp instanceof HTTPError) return;
-		setColors(resp.colors);
-	}
 
 	function selectionHandler({ target }: MouseEvent): void {
 		if ((target as HTMLElement).className.includes('highlighController')) return;
@@ -98,7 +85,7 @@ export default function Highlights(): JSX.Element {
 	if (range) {
 		return (
 			<div className="highlighController">
-				{colors.map(({ color }, index) => (
+				{DEF_COLORS.map(({ color }, index) => (
 					<div
 						key={index}
 						onClick={() => createHighlight(color)}
