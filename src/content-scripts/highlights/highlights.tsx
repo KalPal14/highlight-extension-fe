@@ -1,107 +1,65 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 
-import './highlights.scss';
-import findTextToHighlight from './helpers/find-text-to-highlight.helper';
-import INodeInRangeTextContent from './types/node-in-range-text-content.interface';
+import createRangeFromHighlightDto from './helpers/create-range-from-highlight-dto.helper';
+import CreateHighlight from './create-highlight';
+import drawHighlight from './helpers/draw-highlight.helper';
 
-import { DEF_COLORS } from '@/common/constants/colors';
+import IApiResponseMsg from '@/common/types/extension-messages/api-response-msg.interface';
+import TGetPageDto from '@/common/types/dto/pages/get-page.type';
+import IBaseHighlightDto from '@/common/types/dto/highlights/base-highlight.interface';
+import { PAGES_API_ROUTES } from '@/common/constants/api-routes/pages';
+import TGetPageRo from '@/common/types/ro/pages/get-page.type';
+import callSendApiRequestSw from '@/service-worker/helpers/call-send-api-request-sw.helper';
 
 export default function Highlights(): JSX.Element {
-	const [range, setRange] = useState<Range | null>(null);
-
 	useEffect(() => {
-		document.addEventListener('mouseup', selectionHandler);
+		chrome.runtime.onMessage.addListener(apiResponseMsgHandler);
+		callSendApiRequestSw<TGetPageRo>({
+			contentScriptsHandler: 'getPageHandler',
+			method: 'get',
+			url: PAGES_API_ROUTES.getPage,
+			data: {
+				url: location.href,
+			},
+		});
 
-		return () => window.removeEventListener('mouseup', selectionHandler);
+		return () => {
+			chrome.runtime.onMessage.removeListener(apiResponseMsgHandler);
+		};
 	}, []);
 
-	function selectionHandler({ target }: MouseEvent): void {
-		if ((target as HTMLElement).className.includes('highlighController')) return;
-
-		const newSelection = document.getSelection();
-		if (!newSelection || newSelection.type !== 'Range') {
-			setRange(null);
-			return;
-		}
-
-		const newRange = newSelection.getRangeAt(0);
-		setRange(newRange);
-	}
-
-	function createHighlight(color: string): void {
-		if (!range) return;
-
-		const nodesInRangeList = findTextToHighlight(range.commonAncestorContainer, range);
-
-		nodesInRangeList.forEach(({ node, textContent }, index) => {
-			if (
-				nodesInRangeList.length > 1 &&
-				index === nodesInRangeList.length - 1 &&
-				!textContent.isAllInRange
-			) {
-				const lastNodeText = removeExtraLetterFromRange(textContent);
-				wrapTextWithHighlighter(node, lastNodeText, color);
+	function apiResponseMsgHandler({
+		serviceWorkerHandler,
+		contentScriptsHandler,
+		data,
+	}: IApiResponseMsg): void {
+		if (serviceWorkerHandler !== 'apiRequest') return;
+		switch (contentScriptsHandler) {
+			case 'getPageHandler':
+				getPageHandler(data as TGetPageDto);
 				return;
-			}
-			wrapTextWithHighlighter(node, textContent, color);
-		});
-		setRange(null);
+		}
 	}
 
-	function removeExtraLetterFromRange({
-		strBeforeRange,
-		strInRange,
-		strAfterRange,
-	}: INodeInRangeTextContent): INodeInRangeTextContent {
-		return {
-			strBeforeRange,
-			strInRange: strInRange.slice(0, strInRange.length - 1),
-			strAfterRange: strInRange[strInRange.length - 1] + strAfterRange,
-		};
-	}
-
-	function wrapTextWithHighlighter(
-		textNode: Node,
-		{ strBeforeRange, strAfterRange, strInRange }: INodeInRangeTextContent,
-		color: string
-	): void {
-		if (textNode.nodeType !== Node.TEXT_NODE || !textNode.textContent || !textNode.parentElement) {
+	function getPageHandler(page: TGetPageDto): void {
+		if (page.id === null) {
 			return;
 		}
-
-		const wrapper = createHighlighterElement(strInRange, color);
-		textNode.parentElement.replaceChild(wrapper, textNode);
-		wrapper.before(strBeforeRange);
-		wrapper.after(strAfterRange);
+		drawHighlightsFromDto(page.highlights);
 	}
 
-	function createHighlighterElement(textToHighlight: string, color: string): HTMLSpanElement {
-		const span = document.createElement('web-highlight');
-		span.style.backgroundColor = color;
-		span.addEventListener('click', () => {
-			console.log('You clicked on the highlighter!');
-			chrome.runtime.sendMessage({ type: 'apiRequest' });
+	function drawHighlightsFromDto(highlights: IBaseHighlightDto[] | null): void {
+		if (!highlights) return;
+
+		highlights.forEach((highlight) => {
+			const highlightRange = createRangeFromHighlightDto(highlight);
+			drawHighlight(highlightRange, highlight);
 		});
-		span.innerText = textToHighlight;
-		return span;
 	}
 
-	if (range) {
-		return (
-			<div className="highlighController">
-				{DEF_COLORS.map(({ color }, index) => (
-					<div
-						key={index}
-						onClick={() => createHighlight(color)}
-						className="highlighController_color"
-						style={{
-							backgroundColor: color,
-						}}
-					></div>
-				))}
-			</div>
-		);
-	}
-
-	return <></>;
+	return (
+		<>
+			<CreateHighlight />
+		</>
+	);
 }
