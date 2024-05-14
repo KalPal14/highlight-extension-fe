@@ -4,7 +4,8 @@ import TCreateHighlightRo from '@/common/types/ro/highlights/create-highlight.ty
 
 export default function buildCreateHighlightRo(
 	range: Range,
-	color: string
+	color: string,
+	note?: string
 ): TCreateHighlightRo | null {
 	if (!range.startContainer.textContent || !range.endContainer.textContent) return null;
 
@@ -30,5 +31,6 @@ export default function buildCreateHighlightRo(
 		},
 		text: range.toString(),
 		color,
+		note,
 	};
 }

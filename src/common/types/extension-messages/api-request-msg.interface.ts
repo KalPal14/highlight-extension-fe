@@ -4,6 +4,7 @@ import IApiServise, { TRoLimiter } from '@/common/services/api.service.interface
 
 export default interface IApiRequestMsg<RO extends TRoLimiter = undefined> extends IBaseMsg {
 	serviceWorkerHandler: 'apiRequest';
+	contentScriptsHandler: string;
 	method: keyof IApiServise;
 	url: string;
 	data?: RO;

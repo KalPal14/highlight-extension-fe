@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 
-import './highlights.scss';
 import buildCreateHighlightRo from './helpers/build-create-highlight-ro.helper';
 import createRangeFromHighlightDto from './helpers/create-range-from-highlight-dto.helper';
 import drawHighlight from './helpers/draw-highlight.helper';
+import HighlightsController from './highlights-controller';
 
-import { DEF_COLORS } from '@/common/constants/colors';
 import IApiResponseMsg from '@/common/types/extension-messages/api-response-msg.interface';
 import callSendApiRequestSw from '@/service-worker/helpers/call-send-api-request-sw.helper';
 import { HIGHLIGHTS_API_ROUTES } from '@/common/constants/api-routes/highlights';
@@ -14,6 +13,10 @@ import ICreateHighlightDto from '@/common/types/dto/highlights/create-highlight.
 
 export default function CreateHighlight(): JSX.Element {
 	const [selectedRange, setSelectedRange] = useState<Range | null>(null);
+	const [mouseСoordinates, setMouseСoordinates] = useState({
+		x: 0,
+		y: 0,
+	});
 
 	useEffect(() => {
 		document.addEventListener('mouseup', selectionHandler);
@@ -25,8 +28,8 @@ export default function CreateHighlight(): JSX.Element {
 		};
 	}, []);
 
-	function selectionHandler({ target }: MouseEvent): void {
-		if ((target as HTMLElement).className.includes('highlighController')) return;
+	function selectionHandler({ target, clientX, clientY }: MouseEvent): void {
+		if ((target as HTMLElement).id === 'highlights-ext-container') return;
 
 		const newSelection = document.getSelection();
 		if (!newSelection || newSelection.type !== 'Range') {
@@ -36,6 +39,10 @@ export default function CreateHighlight(): JSX.Element {
 
 		const newRange = newSelection.getRangeAt(0);
 		setSelectedRange(newRange);
+		setMouseСoordinates({
+			x: clientX,
+			y: clientY,
+		});
 	}
 
 	function apiResponseMsgHandler({
@@ -51,10 +58,10 @@ export default function CreateHighlight(): JSX.Element {
 		}
 	}
 
-	async function createHighlight(color: string): Promise<void> {
+	async function createHighlight(color: string, note?: string): Promise<void> {
 		if (!selectedRange) return;
 
-		const newHighlightData = buildCreateHighlightRo(selectedRange, color);
+		const newHighlightData = buildCreateHighlightRo(selectedRange, color, note);
 		if (!newHighlightData) {
 			return;
 		}
@@ -69,22 +76,23 @@ export default function CreateHighlight(): JSX.Element {
 	function createHighlightRespHandler(highlight: ICreateHighlightDto): void {
 		const highlightRange = createRangeFromHighlightDto(highlight);
 		drawHighlight(highlightRange, highlight);
+		setSelectedRange(null);
+	}
+
+	async function onControllerClose(color: string, note?: string): Promise<void> {
+		if (note) {
+			await createHighlight(color, note);
+		}
 	}
 
 	if (selectedRange) {
 		return (
-			<div className="highlighController">
-				{DEF_COLORS.map(({ color }, index) => (
-					<div
-						key={index}
-						onClick={() => createHighlight(color)}
-						className="highlighController_color"
-						style={{
-							backgroundColor: color,
-						}}
-					></div>
-				))}
-			</div>
+			<HighlightsController
+				clientX={mouseСoordinates.x}
+				clientY={mouseСoordinates.y}
+				onSelectColor={createHighlight}
+				onControllerClose={onControllerClose}
+			/>
 		);
 	}
 

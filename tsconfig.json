@@ -15,7 +15,12 @@
 		"forceConsistentCasingInFileNames": true,
 		"sourceMap": true,
 		"removeComments": true,
-		"strict": true
+		"strict": true,
+		"types": [
+			"@emotion/react/types/css-prop",
+			"chrome",
+			"node"
+		]
 	},
 	"include": [
 		"src/**/*.ts",
