@@ -4,7 +4,7 @@ import { ChakraProvider } from '@chakra-ui/react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 
-import OptionsPage from './options';
+import OptionsPage from './options-page';
 
 function init(): void {
 	const rootContainer = document.createElement('div');

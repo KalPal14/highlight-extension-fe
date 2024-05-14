@@ -1,9 +1,9 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 
-import PagesPage from './pages';
-import LoginPage from './login';
-import RegistrationPage from './registration';
+import PagesPage from './pages/pages-page';
+import LoginPage from './login/login-page';
+import RegistrationPage from './registration/registration-page';
 
 import { TABS_ROUTES } from '@/common/constants/routes/tabs';
 

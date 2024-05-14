@@ -1,6 +1,6 @@
 import findNodesByText from './find-nodes-by-text.helper';
 
-import IBaseHighlightDto from '@/common/types/dto/highlights/base-highlight.interface';
+import IBaseHighlightDto from '@/common/types/dto/highlights/base/base-highlight.interface';
 
 export default function createRangeFromHighlightDto(highlight: IBaseHighlightDto): Range {
 	const sameToStartContainerNodes = findNodesByText(highlight.startContainer.text);

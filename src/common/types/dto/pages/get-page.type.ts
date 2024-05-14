@@ -1,4 +1,4 @@
-import IBaseHighlightDto from '../highlights/base-highlight.interface';
+import IBaseHighlightDto from '../highlights/base/base-highlight.interface';
 
 interface IEmptyPage {
 	id: null;

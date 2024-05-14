@@ -1,20 +1,20 @@
 import React, { useEffect } from 'react';
 
 import createRangeFromHighlightDto from './helpers/create-range-from-highlight-dto.helper';
-import CreateHighlight from './create-highlight';
+import CreateHighlight from './components/create-highlight';
 import drawHighlight from './helpers/draw-highlight.helper';
 
-import IApiResponseMsg from '@/common/types/extension-messages/api-response-msg.interface';
 import TGetPageDto from '@/common/types/dto/pages/get-page.type';
-import IBaseHighlightDto from '@/common/types/dto/highlights/base-highlight.interface';
+import IBaseHighlightDto from '@/common/types/dto/highlights/base/base-highlight.interface';
 import { PAGES_API_ROUTES } from '@/common/constants/api-routes/pages';
 import TGetPageRo from '@/common/types/ro/pages/get-page.type';
-import callSendApiRequestSw from '@/service-worker/helpers/call-send-api-request-sw.helper';
+import apiRequestDispatcher from '@/service-worker/handlers/api-request/api-request.dispatcher';
+import IApiRequestOutcomeMsg from '@/service-worker/types/outcome-msgs/api-request.outcome-msg.interface';
 
 export default function Highlights(): JSX.Element {
 	useEffect(() => {
 		chrome.runtime.onMessage.addListener(apiResponseMsgHandler);
-		callSendApiRequestSw<TGetPageRo>({
+		apiRequestDispatcher<TGetPageRo>({
 			contentScriptsHandler: 'getPageHandler',
 			method: 'get',
 			url: PAGES_API_ROUTES.getPage,
@@ -32,7 +32,7 @@ export default function Highlights(): JSX.Element {
 		serviceWorkerHandler,
 		contentScriptsHandler,
 		data,
-	}: IApiResponseMsg): void {
+	}: IApiRequestOutcomeMsg): void {
 		if (serviceWorkerHandler !== 'apiRequest') return;
 		switch (contentScriptsHandler) {
 			case 'getPageHandler':

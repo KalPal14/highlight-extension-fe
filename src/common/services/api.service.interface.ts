@@ -1,4 +1,4 @@
-import { HTTPError } from '@/errors/http-error';
+import { HTTPError } from '@/errors/http-error/http-error';
 
 export type TRoLimiter = Record<string, unknown> | null | undefined;
 

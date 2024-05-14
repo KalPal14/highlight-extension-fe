@@ -1,6 +1,6 @@
 import IApiServise, { TRoLimiter } from './api.service.interface';
 
-import { HTTPError } from '@/errors/http-error';
+import { HTTPError } from '@/errors/http-error/http-error';
 
 export default class ApiServise implements IApiServise {
 	private baseUrl: string | undefined;

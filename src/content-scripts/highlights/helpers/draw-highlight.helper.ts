@@ -2,7 +2,7 @@ import INodeInRangeTextContent from '../types/node-in-range-text-content.interfa
 
 import findTextToHighlight from './find-text-to-highlight.helper';
 
-import IBaseHighlightDto from '@/common/types/dto/highlights/base-highlight.interface';
+import IBaseHighlightDto from '@/common/types/dto/highlights/base/base-highlight.interface';
 
 export default function drawHighlight(range: Range, highlight: IBaseHighlightDto): void {
 	const nodesInRangeList = findTextToHighlight(range.commonAncestorContainer, range);
