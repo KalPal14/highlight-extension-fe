@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import createRangeFromHighlightDto from './helpers/create-range-from-highlight-dto.helper';
 import CreateHighlight from './components/create-highlight';
 import drawHighlight from './helpers/draw-highlight.helper';
+import InteractionWithHighlight from './components/interaction-with-highlight';
 
 import TGetPageDto from '@/common/types/dto/pages/get-page.type';
 import IBaseHighlightDto from '@/common/types/dto/highlights/base/base-highlight.interface';
@@ -60,6 +61,7 @@ export default function Highlights(): JSX.Element {
 	return (
 		<>
 			<CreateHighlight />
+			<InteractionWithHighlight />
 		</>
 	);
 }

@@ -33,6 +33,10 @@ export default function HighlightsController({
 		return () => onControllerClose(DEF_COLORS[0].color, watch('note'));
 	}, []);
 
+	useEffect(() => {
+		setShowNoteField(Boolean(note));
+	}, [note]);
+
 	function calculatePosicionX(): number {
 		const toEndPageSpacing = window.innerWidth - clientX - 250;
 		if (toEndPageSpacing < 0) {

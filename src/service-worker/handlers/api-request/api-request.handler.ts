@@ -15,5 +15,6 @@ export default async function apiRequestHandler<RO extends TRoLimiter>(
 		serviceWorkerHandler,
 		contentScriptsHandler,
 		data: resp,
+		incomeData: data,
 	});
 }

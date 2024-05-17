@@ -1,14 +1,5 @@
-import INodeRangeInfo from '@/common/types/node-range-info.interface';
+import TBaseHighlightRo from './base/base-highlight.type';
 
-type TCreateHighlightRo = {
-	pageUrl: string;
-	startContainer: INodeRangeInfo;
-	endContainer: INodeRangeInfo;
-	startOffset: number;
-	endOffset: number;
-	text: string;
-	color: string;
-	note?: string;
-};
+type TCreateHighlightRo = TBaseHighlightRo;
 
 export default TCreateHighlightRo;

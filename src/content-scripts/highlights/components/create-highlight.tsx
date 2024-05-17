@@ -24,7 +24,7 @@ export default function CreateHighlight(): JSX.Element {
 		chrome.runtime.onMessage.addListener(apiResponseMsgHandler);
 
 		return () => {
-			window.removeEventListener('mouseup', selectionHandler);
+			document.removeEventListener('mouseup', selectionHandler);
 			chrome.runtime.onMessage.removeListener(apiResponseMsgHandler);
 		};
 	}, []);

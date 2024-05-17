@@ -48,17 +48,15 @@ function wrapTextWithHighlighterElement(
 	wrapper.after(strAfterRange);
 }
 
-function createHighlighterElement(
+export function createHighlighterElement(
 	textToHighlight: string,
-	{ id, color }: IBaseHighlightDto
+	{ id, color, note }: IBaseHighlightDto
 ): HTMLSpanElement {
 	const span = document.createElement('web-highlight');
 	span.style.backgroundColor = color;
 	span.id = `web-highlight-${id}`;
-	span.addEventListener('click', async ({ target }) => {
-		if (!target) return;
-		console.log((target as HTMLElement).id);
-	});
 	span.innerText = textToHighlight;
+	span.setAttribute('data-higlight-note', note ?? '');
+
 	return span;
 }
