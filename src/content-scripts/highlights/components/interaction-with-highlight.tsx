@@ -10,6 +10,7 @@ import apiRequestDispatcher from '@/service-worker/handlers/api-request/api-requ
 import IApiRequestOutcomeMsg from '@/service-worker/types/outcome-msgs/api-request.outcome-msg.interface';
 import TUpdateHighlightRo from '@/common/types/ro/highlights/update-highlight.type';
 import IUpdateHighlightDto from '@/common/types/dto/highlights/update-highlight.interface';
+import IDeleteHighlightDto from '@/common/types/dto/highlights/delete-highlight.interface';
 
 export default function InteractionWithHighlight(): JSX.Element {
 	const highlightElementRef = useRef<IHighlightElementData | null>(null);
@@ -80,6 +81,8 @@ export default function InteractionWithHighlight(): JSX.Element {
 			case 'updateHighlightRespHandler':
 				updateHighlightRespHandler(data as IUpdateHighlightDto, incomeData as TUpdateHighlightRo);
 				return;
+			case 'deleteHighlightRespHandler':
+				deleteHighlightRespHandler(data as IDeleteHighlightDto);
 		}
 	}
 
@@ -129,14 +132,35 @@ export default function InteractionWithHighlight(): JSX.Element {
 		}
 	}
 
+	function onDeleteHighlight(): void {
+		if (!currentHighlightElement) return;
+
+		apiRequestDispatcher({
+			contentScriptsHandler: 'deleteHighlightRespHandler',
+			url: HIGHLIGHTS_API_ROUTES.delete(currentHighlightElement.highlightId),
+			method: 'delete',
+		});
+	}
+
+	function deleteHighlightRespHandler(highlight: IDeleteHighlightDto): void {
+		const highlighterElements = document.querySelectorAll(`#web-highlight-${highlight.id}`);
+		highlighterElements.forEach((highlighterElement) => {
+			if (!highlighterElement.textContent) return;
+			highlighterElement.outerHTML = highlighterElement.getAttribute('data-initial-text')!;
+		});
+		setCurrentHighlightElement(null);
+	}
+
 	if (currentHighlightElement) {
 		return (
 			<HighlightsController
 				clientX={mouseСoordinates.x}
 				clientY={mouseСoordinates.y}
 				note={currentHighlightElement.note ?? undefined}
+				forExistingHighlight={true}
 				onSelectColor={changeHighlightColor}
 				onControllerClose={onControllerClose}
+				onDeleteClick={onDeleteHighlight}
 			/>
 		);
 	}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { CalendarIcon, SettingsIcon } from '@chakra-ui/icons';
+import { CalendarIcon, DeleteIcon, SettingsIcon } from '@chakra-ui/icons';
 import { useForm } from 'react-hook-form';
 import ReactTextareaAutosize from 'react-textarea-autosize';
 
@@ -11,16 +11,20 @@ export interface IHighlightsControllerProps {
 	clientX: number;
 	clientY: number;
 	note?: string;
+	forExistingHighlight?: boolean;
 	onSelectColor: (color: string, note?: string) => void;
 	onControllerClose: (color: string, note?: string) => void;
+	onDeleteClick?: () => void;
 }
 
 export default function HighlightsController({
 	clientX,
 	clientY,
 	note,
+	forExistingHighlight,
 	onSelectColor,
 	onControllerClose,
+	onDeleteClick = (): void => {},
 }: IHighlightsControllerProps): JSX.Element {
 	const { register, watch } = useForm<{ note?: string }>({
 		values: {
@@ -46,15 +50,40 @@ export default function HighlightsController({
 	}
 
 	return (
-		<div
+		<section
 			className="highlighController"
 			style={{
 				zIndex: '999',
 				position: 'fixed',
-				top: clientY,
+				top: clientY - 40,
 				left: calculatePosicionX(),
 			}}
 		>
+			{forExistingHighlight && (
+				<div
+					className="highlighController_forExistingHighlight"
+					onClick={onDeleteClick}
+					style={{
+						display: 'flex',
+						width: 'min-content',
+						padding: '6px',
+						borderRadius: '10px',
+						border: '1px solid #fff',
+						boxShadow: 'rgba(255, 255, 255, 0.2) 0px 2px 8px 0px',
+						backgroundColor: '#d4d4bf',
+						marginBottom: '10px',
+					}}
+				>
+					<DeleteIcon
+						style={{
+							cursor: 'pointer',
+							width: '24px',
+							color: '#4a4a4a',
+						}}
+					/>
+				</div>
+			)}
+
 			<div
 				style={{
 					display: 'flex',
@@ -143,6 +172,6 @@ export default function HighlightsController({
 					rows={5}
 				/>
 			)}
-		</div>
+		</section>
 	);
 }

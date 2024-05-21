@@ -4,11 +4,19 @@ export default function createHighlighterElement(
 	textToHighlight: string,
 	{ id, color, note }: IBaseHighlightDto
 ): HTMLSpanElement {
-	const span = document.createElement('web-highlight');
-	span.style.backgroundColor = color;
-	span.id = `web-highlight-${id}`;
-	span.innerText = textToHighlight;
-	span.setAttribute('data-higlight-note', note ?? '');
+	const webHighlight = document.createElement('web-highlight');
+	webHighlight.style.backgroundColor = color;
+	webHighlight.id = `web-highlight-${id}`;
+	webHighlight.innerText = textToHighlight;
+	webHighlight.setAttribute('data-higlight-note', note ?? '');
+	webHighlight.setAttribute('data-initial-text', textToHighlight);
+	removeBr(webHighlight);
+	return webHighlight;
+}
 
-	return span;
+function removeBr(element: HTMLElement): void {
+	const childElements = element.children;
+	for (let i = 0; i < childElements.length; i++) {
+		childElements.item(i)?.remove();
+	}
 }
