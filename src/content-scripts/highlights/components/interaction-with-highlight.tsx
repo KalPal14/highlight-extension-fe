@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 import IHighlightElementData from '../types/highlight-element-data-interface';
-import { createHighlighterElement } from '../helpers/draw-highlight.helper';
+import createHighlighterElement from '../helpers/create-highlighter-element.helper';
 
 import HighlightsController from './highlights-controller';
 

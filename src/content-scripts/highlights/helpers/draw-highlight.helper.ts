@@ -1,5 +1,6 @@
 import INodeInRangeTextContent from '../types/node-in-range-text-content.interface';
 
+import createHighlighterElement from './create-highlighter-element.helper';
 import findTextToHighlight from './find-text-to-highlight.helper';
 
 import IBaseHighlightDto from '@/common/types/dto/highlights/base/base-highlight.interface';
@@ -46,17 +47,4 @@ function wrapTextWithHighlighterElement(
 	textNode.parentElement.replaceChild(wrapper, textNode);
 	wrapper.before(strBeforeRange);
 	wrapper.after(strAfterRange);
-}
-
-export function createHighlighterElement(
-	textToHighlight: string,
-	{ id, color, note }: IBaseHighlightDto
-): HTMLSpanElement {
-	const span = document.createElement('web-highlight');
-	span.style.backgroundColor = color;
-	span.id = `web-highlight-${id}`;
-	span.innerText = textToHighlight;
-	span.setAttribute('data-higlight-note', note ?? '');
-
-	return span;
 }
