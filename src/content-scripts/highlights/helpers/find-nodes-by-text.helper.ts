@@ -1,3 +1,5 @@
+import setInitialTextToHighlightPerent from './set-initial-text-to-highlight-perent.helper';
+
 export default function findNodesByText(text: string, startNode: Node = document.body): Node[] {
 	const result: Node[] = [];
 
@@ -7,6 +9,7 @@ export default function findNodesByText(text: string, startNode: Node = document
 		if (node.nodeType === Node.TEXT_NODE) {
 			if (node.textContent === text) {
 				result.push(node);
+				setInitialTextToHighlightPerent(node.parentElement);
 			}
 			return;
 		}
