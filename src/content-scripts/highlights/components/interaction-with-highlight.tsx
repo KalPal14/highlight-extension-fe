@@ -55,6 +55,9 @@ export default function InteractionWithHighlight(): JSX.Element {
 
 	function onHighlightClickHandler({ target, clientX, clientY }: MouseEvent): void {
 		if (!target) return;
+
+		if (document.getSelection()?.type === 'Range') return;
+
 		const higlightElement = target as HTMLElement;
 
 		highlightElementToSetRef.current = {
