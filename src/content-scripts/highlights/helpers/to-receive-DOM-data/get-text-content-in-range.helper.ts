@@ -1,4 +1,4 @@
-import INodeInRangeTextContent from '../types/node-in-range-text-content.interface';
+import INodeInRangeTextContent from '../../types/node-in-range-text-content.interface';
 
 import isAllTextInRange from './is-all-text-in-range.helper';
 

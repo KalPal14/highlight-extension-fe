@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 import IHighlightElementData from '../types/highlight-element-data-interface';
-import createHighlighterElement from '../helpers/create-highlighter-element.helper';
-import createRangeFromHighlightDto from '../helpers/create-range-from-highlight-dto.helper';
-import drawHighlight from '../helpers/draw-highlight.helper';
+import createHighlighterElement from '../helpers/for-DOM-changes/create-highlighter-element.helper';
+import createRangeFromHighlightDto from '../helpers/for-DOM-changes/create-range-from-highlight-dto.helper';
+import drawHighlight from '../helpers/for-DOM-changes/draw-highlight.helper';
 
 import HighlightsController from './highlights-controller';
 

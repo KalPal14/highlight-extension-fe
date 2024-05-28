@@ -1,4 +1,4 @@
-import INodeInRange from '../types/node-in-range.interface';
+import INodeInRange from '../../types/node-in-range.interface';
 
 import getTextContentInRange from './get-text-content-in-range.helper';
 

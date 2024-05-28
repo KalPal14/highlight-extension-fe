@@ -1,4 +1,4 @@
-import setInitialTextToHighlightPerent from './set-initial-text-to-highlight-perent.helper';
+import setInitialTextToHighlightPerent from '../for-DOM-changes/set-initial-text-to-highlight-perent.helper';
 
 export default function findNodesByText(text: string, startNode: Node = document.body): Node[] {
 	const result: Node[] = [];

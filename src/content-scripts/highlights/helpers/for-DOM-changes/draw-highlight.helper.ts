@@ -1,7 +1,7 @@
-import INodeInRangeTextContent from '../types/node-in-range-text-content.interface';
+import INodeInRangeTextContent from '../../types/node-in-range-text-content.interface';
+import findTextToHighlight from '../to-receive-DOM-data/find-text-to-highlight.helper';
 
 import createHighlighterElement from './create-highlighter-element.helper';
-import findTextToHighlight from './find-text-to-highlight.helper';
 
 import IBaseHighlightDto from '@/common/types/dto/highlights/base/base-highlight.interface';
 

@@ -1,6 +1,6 @@
-import findNodesByText from './find-nodes-by-text.helper';
-import getHighlightPerent from './get-highlight-perent.helper';
-import setInitialTextToHighlightPerent from './set-initial-text-to-highlight-perent.helper';
+import findNodesByText from './to-receive-DOM-data/find-nodes-by-text.helper';
+import getHighlightPerent from './to-receive-DOM-data/get-highlight-perent.helper';
+import setInitialTextToHighlightPerent from './for-DOM-changes/set-initial-text-to-highlight-perent.helper';
 
 import TCreateHighlightRo from '@/common/types/ro/highlights/create-highlight.type';
 

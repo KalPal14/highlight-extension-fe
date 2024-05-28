@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 
 import buildCreateHighlightRo from '../helpers/build-create-highlight-ro.helper';
-import createRangeFromHighlightDto from '../helpers/create-range-from-highlight-dto.helper';
-import drawHighlight from '../helpers/draw-highlight.helper';
+import createRangeFromHighlightDto from '../helpers/for-DOM-changes/create-range-from-highlight-dto.helper';
+import drawHighlight from '../helpers/for-DOM-changes/draw-highlight.helper';
 
 import HighlightsController from './highlights-controller';
 

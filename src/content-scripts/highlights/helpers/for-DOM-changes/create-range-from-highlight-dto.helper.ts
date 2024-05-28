@@ -1,5 +1,5 @@
-import findElementsByInitialText from './find-element-by-initial-text.helper';
-import findNodesByText from './find-nodes-by-text.helper';
+import findElementsByInitialText from '../to-receive-DOM-data/find-element-by-initial-text.helper';
+import findNodesByText from '../to-receive-DOM-data/find-nodes-by-text.helper';
 
 import INodeRangeInfo from '@/common/types/node-range-info.interface';
 import IBaseHighlightDto from '@/common/types/dto/highlights/base/base-highlight.interface';
