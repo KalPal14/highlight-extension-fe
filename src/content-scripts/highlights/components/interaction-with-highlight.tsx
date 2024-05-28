@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 
 import IHighlightElementData from '../types/highlight-element-data-interface';
 import createHighlighterElement from '../helpers/create-highlighter-element.helper';
+import createRangeFromHighlightDto from '../helpers/create-range-from-highlight-dto.helper';
+import drawHighlight from '../helpers/draw-highlight.helper';
 
 import HighlightsController from './highlights-controller';
 
@@ -11,6 +13,8 @@ import IApiRequestOutcomeMsg from '@/service-worker/types/outcome-msgs/api-reque
 import TUpdateHighlightRo from '@/common/types/ro/highlights/update-highlight.type';
 import IUpdateHighlightDto from '@/common/types/dto/highlights/update-highlight.interface';
 import IDeleteHighlightDto from '@/common/types/dto/highlights/delete-highlight.interface';
+import TGetHighlightsRo from '@/common/types/ro/highlights/get-highlights.type';
+import TGetHighlightsDto from '@/common/types/dto/highlights/get-highlights.type';
 
 export default function InteractionWithHighlight(): JSX.Element {
 	const highlightElementRef = useRef<IHighlightElementData | null>(null);
@@ -86,6 +90,10 @@ export default function InteractionWithHighlight(): JSX.Element {
 				return;
 			case 'deleteHighlightRespHandler':
 				deleteHighlightRespHandler(data as IDeleteHighlightDto);
+				return;
+			case 'redrawErasedHighlights':
+				redrawErasedHighlights(data as TGetHighlightsDto);
+				return;
 		}
 	}
 
@@ -150,8 +158,43 @@ export default function InteractionWithHighlight(): JSX.Element {
 		highlighterElements.forEach((highlighterElement) => {
 			if (!highlighterElement.textContent) return;
 			highlighterElement.outerHTML = highlighterElement.getAttribute('data-initial-text')!;
+
+			const nestedHighlightsIds = getNestedHighlightsIds(highlighterElement);
+			apiRequestDispatcher<TGetHighlightsRo>({
+				contentScriptsHandler: 'redrawErasedHighlights',
+				url: HIGHLIGHTS_API_ROUTES.getHighlghts,
+				method: 'get',
+				data: {
+					ids: nestedHighlightsIds,
+				},
+			});
 		});
 		setCurrentHighlightElement(null);
+	}
+
+	function getNestedHighlightsIds(initialElement: Element): number[] {
+		const ids: number[] = [];
+
+		find(initialElement);
+
+		function find(element: Element): void {
+			for (let i = 0; i < element.children.length; i++) {
+				const child = element.children.item(i);
+				if (child?.tagName !== 'WEB-HIGHLIGHT') continue;
+				const id = Number(child.id.split('web-highlight-')[1]);
+				ids.push(id);
+				find(child);
+			}
+		}
+
+		return ids;
+	}
+
+	function redrawErasedHighlights(highlights: TGetHighlightsDto): void {
+		highlights.forEach((highlight) => {
+			const highlightRange = createRangeFromHighlightDto(highlight);
+			drawHighlight(highlightRange, highlight);
+		});
 	}
 
 	if (currentHighlightElement) {
