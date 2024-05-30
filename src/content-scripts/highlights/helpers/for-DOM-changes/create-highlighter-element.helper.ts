@@ -5,7 +5,7 @@ export default function createHighlighterElement(
 	{ id, color, note }: IBaseHighlightDto
 ): HTMLSpanElement {
 	const webHighlight = document.createElement('web-highlight');
-	webHighlight.style.backgroundColor = color;
+	webHighlight.style.backgroundColor = `${color}${80}`;
 	webHighlight.id = `web-highlight-${id}`;
 	webHighlight.innerText = textToHighlight;
 	webHighlight.setAttribute('data-higlight-note', note ?? '');
