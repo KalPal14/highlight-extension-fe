@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { union } from 'lodash';
 
 import IHighlightElementData from '../types/highlight-element-data-interface';
 import createHighlighterElement from '../helpers/for-DOM-changes/create-highlighter-element.helper';
 import createRangeFromHighlightDto from '../helpers/for-DOM-changes/create-range-from-highlight-dto.helper';
 import drawHighlight from '../helpers/for-DOM-changes/draw-highlight.helper';
+import getNestedHighlightsIds from '../helpers/to-receive-DOM-data/get-nested-highlights-Ids.helper';
 
 import HighlightsController from './highlights-controller';
 
@@ -154,40 +156,26 @@ export default function InteractionWithHighlight(): JSX.Element {
 	}
 
 	function deleteHighlightRespHandler(highlight: IDeleteHighlightDto): void {
+		const nestedHighlightsIds: number[][] = [];
+
 		const highlighterElements = document.querySelectorAll(`#web-highlight-${highlight.id}`);
 		highlighterElements.forEach((highlighterElement) => {
 			if (!highlighterElement.textContent) return;
 			highlighterElement.outerHTML = highlighterElement.getAttribute('data-initial-text')!;
 
-			const nestedHighlightsIds = getNestedHighlightsIds(highlighterElement);
-			apiRequestDispatcher<TGetHighlightsRo>({
-				contentScriptsHandler: 'redrawErasedHighlights',
-				url: HIGHLIGHTS_API_ROUTES.getHighlghts,
-				method: 'get',
-				data: {
-					ids: nestedHighlightsIds,
-				},
-			});
+			const nestedToThisHighlightIds = getNestedHighlightsIds(highlighterElement);
+			nestedHighlightsIds.push(nestedToThisHighlightIds);
+		});
+
+		apiRequestDispatcher<TGetHighlightsRo>({
+			contentScriptsHandler: 'redrawErasedHighlights',
+			url: HIGHLIGHTS_API_ROUTES.getHighlghts,
+			method: 'get',
+			data: {
+				ids: union(...nestedHighlightsIds),
+			},
 		});
 		setCurrentHighlightElement(null);
-	}
-
-	function getNestedHighlightsIds(initialElement: Element): number[] {
-		const ids: number[] = [];
-
-		find(initialElement);
-
-		function find(element: Element): void {
-			for (let i = 0; i < element.children.length; i++) {
-				const child = element.children.item(i);
-				if (child?.tagName !== 'WEB-HIGHLIGHT') continue;
-				const id = Number(child.id.split('web-highlight-')[1]);
-				ids.push(id);
-				find(child);
-			}
-		}
-
-		return ids;
 	}
 
 	function redrawErasedHighlights(highlights: TGetHighlightsDto): void {

@@ -1,4 +1,4 @@
-import findNodesByText from './to-receive-DOM-data/find-nodes-by-text.helper';
+import findElementsByText from './to-receive-DOM-data/find-elements-by-text.helper';
 import getHighlightPerent from './to-receive-DOM-data/get-highlight-perent.helper';
 import setInitialTextToHighlightPerent from './for-DOM-changes/set-initial-text-to-highlight-perent.helper';
 
@@ -9,8 +9,12 @@ export default function buildCreateHighlightRo(
 	color: string,
 	note?: string
 ): TCreateHighlightRo | null {
-	if (!range.startContainer.textContent || !range.endContainer.textContent) return null;
-	if (!range.startContainer.parentElement || !range.endContainer.parentElement) return null;
+	if (
+		!range.startContainer.parentElement?.textContent ||
+		!range.endContainer.parentElement?.textContent
+	) {
+		return null;
+	}
 
 	setInitialTextToHighlightPerent(range.startContainer.parentElement);
 	setInitialTextToHighlightPerent(range.endContainer.parentElement);
@@ -23,11 +27,11 @@ export default function buildCreateHighlightRo(
 	const endContainerPerentInitialText = endContainerPerent.getAttribute('data-initial-text');
 	if (!startContainerPerentInitialText || !endContainerPerentInitialText) return null;
 
-	const sameToStartContainerNodes = findNodesByText(range.startContainer.textContent);
-	const sameToEndContainerNodes = findNodesByText(range.endContainer.textContent);
+	const sameToStartContainerPerent = findElementsByText(startContainerPerentInitialText);
+	const sameToEndContainerPerent = findElementsByText(endContainerPerentInitialText);
 
-	const startNodeIndex = sameToStartContainerNodes.indexOf(range.startContainer);
-	const endNodeIndex = sameToEndContainerNodes.indexOf(range.endContainer);
+	const startNodeIndex = sameToStartContainerPerent.indexOf(startContainerPerent);
+	const endNodeIndex = sameToEndContainerPerent.indexOf(endContainerPerent);
 
 	return {
 		pageUrl: location.href,
@@ -36,12 +40,12 @@ export default function buildCreateHighlightRo(
 		startContainer: {
 			text: startContainerPerentInitialText,
 			indexNumber: startNodeIndex,
-			sameElementsAmount: sameToStartContainerNodes.length,
+			sameElementsAmount: sameToStartContainerPerent.length,
 		},
 		endContainer: {
 			text: endContainerPerentInitialText,
 			indexNumber: endNodeIndex,
-			sameElementsAmount: sameToEndContainerNodes.length,
+			sameElementsAmount: sameToEndContainerPerent.length,
 		},
 		text: range.toString(),
 		color,

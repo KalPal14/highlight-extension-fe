@@ -1,5 +1,5 @@
-import findElementsByInitialText from '../to-receive-DOM-data/find-element-by-initial-text.helper';
-import findNodesByText from '../to-receive-DOM-data/find-nodes-by-text.helper';
+import findElementsByInitialText from '../to-receive-DOM-data/find-elements-by-initial-text.helper';
+import findElementsByText from '../to-receive-DOM-data/find-elements-by-text.helper';
 
 import INodeRangeInfo from '@/common/types/node-range-info.interface';
 import IBaseHighlightDto from '@/common/types/dto/highlights/base/base-highlight.interface';
@@ -42,9 +42,10 @@ function getContainerAndOffsetReducer(
 	if (perent) {
 		return findContainerAndOffsetReducer(perent, offset);
 	}
-	const sameToStartContainerNodes = findNodesByText(containerInfo.text);
-	const container = sameToStartContainerNodes[containerInfo.indexNumber];
-	return [container, 0];
+
+	const sameToContainerPerent = findElementsByText(containerInfo.text);
+	const containerPerent = sameToContainerPerent[containerInfo.indexNumber];
+	return findContainerAndOffsetReducer(containerPerent, offset);
 }
 
 function findContainerAndOffsetReducer(

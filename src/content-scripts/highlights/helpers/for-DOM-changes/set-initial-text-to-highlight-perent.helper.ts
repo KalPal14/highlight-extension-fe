@@ -1,4 +1,4 @@
-export default function setInitialTextToHighlightPerent(perentElement: HTMLElement | null): void {
+export default function setInitialTextToHighlightPerent(perentElement: Element | null): void {
 	if (!perentElement) return;
 
 	if (perentElement.tagName === 'WEB-HIGHLIGHT') {
