@@ -6,6 +6,10 @@ import ReactTextareaAutosize from 'react-textarea-autosize';
 import { DEF_COLORS } from '@/common/constants/default-values/colors';
 import { ROOT_OPTIONS_ROUTE } from '@/common/constants/routes/options';
 import openTabDispatcher from '@/service-worker/handlers/open-tab/open-tab.dispatcher';
+import apiRequestDispatcher from '@/service-worker/handlers/api-request/api-request.dispatcher';
+import { USERS_API_ROUTES } from '@/common/constants/api-routes/users';
+import IApiRequestOutcomeMsg from '@/service-worker/types/outcome-msgs/api-request.outcome-msg.interface';
+import IGetUserInfoDto from '@/common/types/dto/users/get-user-info.interface';
 
 export interface IHighlightsControllerProps {
 	clientX: number;
@@ -31,15 +35,41 @@ export default function HighlightsController({
 			note,
 		},
 	});
+
 	const [showNoteField, setShowNoteField] = useState(Boolean(note));
+	const [colors, setColors] = useState(DEF_COLORS);
 
 	useEffect(() => {
-		return () => onControllerClose(DEF_COLORS[0].color, watch('note'));
+		chrome.runtime.onMessage.addListener(apiResponseMsgHandler);
+		apiRequestDispatcher({
+			contentScriptsHandler: 'getUserInfoHandler',
+			method: 'get',
+			url: USERS_API_ROUTES.getUserInfo,
+		});
+
+		return () => onControllerClose(colors[0].color, watch('note'));
 	}, []);
 
 	useEffect(() => {
 		setShowNoteField(Boolean(note));
 	}, [note]);
+
+	function apiResponseMsgHandler({
+		serviceWorkerHandler,
+		contentScriptsHandler,
+		data,
+	}: IApiRequestOutcomeMsg): void {
+		if (serviceWorkerHandler !== 'apiRequest') return;
+		switch (contentScriptsHandler) {
+			case 'getUserInfoHandler':
+				getUserInfoHandler(data as IGetUserInfoDto);
+				return;
+		}
+	}
+
+	function getUserInfoHandler(userInfo: IGetUserInfoDto): void {
+		setColors(userInfo.colors);
+	}
 
 	function calculatePosicionX(): number {
 		const toEndPageSpacing = window.innerWidth - clientX - 250;
@@ -128,7 +158,7 @@ export default function HighlightsController({
 						backgroundColor: '#d4d4bf',
 					}}
 				>
-					{DEF_COLORS.map(({ color }, index) => (
+					{colors.map(({ color }, index) => (
 						<div
 							key={index}
 							onClick={() => onSelectColor(color, watch('note'))}
