@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { CalendarIcon, DeleteIcon, SettingsIcon } from '@chakra-ui/icons';
 import { useForm } from 'react-hook-form';
 import ReactTextareaAutosize from 'react-textarea-autosize';
+
+import IHighlightControllerDynamicStyles from '../types/highlight-controller-dynamic-styles.interface';
 
 import { DEF_COLORS } from '@/common/constants/default-values/colors';
 import { ROOT_OPTIONS_ROUTE } from '@/common/constants/routes/options';
@@ -13,7 +15,7 @@ import IGetUserInfoDto from '@/common/types/dto/users/get-user-info.interface';
 
 export interface IHighlightsControllerProps {
 	clientX: number;
-	clientY: number;
+	pageY: number;
 	note?: string;
 	forExistingHighlight?: boolean;
 	onSelectColor: (color: string, note?: string) => void;
@@ -23,13 +25,15 @@ export interface IHighlightsControllerProps {
 
 export default function HighlightsController({
 	clientX,
-	clientY,
+	pageY,
 	note,
 	forExistingHighlight,
 	onSelectColor,
 	onControllerClose,
 	onDeleteClick = (): void => {},
 }: IHighlightsControllerProps): JSX.Element {
+	const firstColorRef = useRef(DEF_COLORS[0].color);
+
 	const { register, watch } = useForm<{ note?: string }>({
 		values: {
 			note,
@@ -47,7 +51,7 @@ export default function HighlightsController({
 			url: USERS_API_ROUTES.getUserInfo,
 		});
 
-		return () => onControllerClose(colors[0].color, watch('note'));
+		return () => onControllerClose(firstColorRef.current, watch('note'));
 	}, []);
 
 	useEffect(() => {
@@ -68,40 +72,60 @@ export default function HighlightsController({
 	}
 
 	function getUserInfoHandler(userInfo: IGetUserInfoDto): void {
-		setColors(userInfo.colors);
+		const newColors = userInfo.colors.length ? userInfo.colors : DEF_COLORS;
+		setColors(newColors);
+		firstColorRef.current = newColors[0].color;
 	}
 
-	function calculatePosicionX(): number {
-		const toEndPageSpacing = window.innerWidth - clientX - 250;
-		if (toEndPageSpacing < 0) {
-			return clientX - Math.abs(toEndPageSpacing);
+	function getColorsInOneLineAmount(): number {
+		if (showNoteField && colors.length < 5) {
+			return 5;
 		}
-		return clientX;
+		if (colors.length > 8) {
+			return 8;
+		}
+		return colors.length;
 	}
+	function calculateDynamicStyles(): IHighlightControllerDynamicStyles {
+		const colorBlockWidth = 26;
+		const restControllerWidth = 79;
+		const rightIndent = 20;
+		const maxColorsInLine = 8;
+
+		const colorsInOneLine = getColorsInOneLineAmount();
+		const controllerWidth = colorBlockWidth * colorsInOneLine + restControllerWidth;
+		const toEndPageSpacing = window.innerWidth - clientX - controllerWidth - rightIndent;
+
+		const noteBtnMlAbs = colors.length <= maxColorsInLine ? 20 : 46;
+		const noteTextareaMl = colors.length <= maxColorsInLine ? 4 : 0;
+		const left = toEndPageSpacing < 0 ? clientX - Math.abs(toEndPageSpacing) : clientX;
+
+		return {
+			left,
+			controllerWidth,
+			noteTextareaMl,
+			noteBtnMlAbs,
+		};
+	}
+	const ds = calculateDynamicStyles();
 
 	return (
-		<section
-			className="highlighController"
-			style={{
-				zIndex: '999',
-				position: 'fixed',
-				top: clientY - 40,
-				left: calculatePosicionX(),
-			}}
-		>
+		<>
 			{forExistingHighlight && (
-				<div
-					className="highlighController_forExistingHighlight"
+				<section
+					className="highlighControllerTopPanel"
 					onClick={onDeleteClick}
 					style={{
+						zIndex: '999',
+						position: 'absolute',
+						top: pageY - 40,
+						left: ds.left,
 						display: 'flex',
-						width: 'min-content',
 						padding: '6px',
 						borderRadius: '10px',
 						border: '1px solid #fff',
 						boxShadow: 'rgba(255, 255, 255, 0.2) 0px 2px 8px 0px',
 						backgroundColor: '#d4d4bf',
-						marginBottom: '10px',
 					}}
 				>
 					<DeleteIcon
@@ -111,97 +135,125 @@ export default function HighlightsController({
 							color: '#4a4a4a',
 						}}
 					/>
-				</div>
+				</section>
 			)}
 
-			<div
+			<section
+				className="highlighController"
 				style={{
-					display: 'flex',
-					alignItems: 'center',
-					backgroundColor: 'rgba(255, 255, 255, 0)',
+					zIndex: '999',
+					position: 'absolute',
+					top: pageY,
+					left: ds.left,
 				}}
 			>
 				<div
-					onClick={() => setShowNoteField(!showNoteField)}
-					className="highlighController_noteBtn"
 					style={{
-						zIndex: 1,
-						cursor: 'pointer',
 						display: 'flex',
 						alignItems: 'center',
-						justifyContent: 'center',
-						marginRight: '-12px',
-						width: '44px',
-						height: '44px',
-						borderRadius: '50%',
-						border: '1px solid #fff',
-						boxShadow: 'rgba(255, 255, 255, 0.2) 0px 2px 8px 0px',
-						backgroundColor: '#4a4a4a',
+						backgroundColor: 'rgba(255, 255, 255, 0)',
 					}}
 				>
-					<CalendarIcon
+					<div
+						onClick={() => setShowNoteField(!showNoteField)}
+						className="highlighController_noteBtn"
 						style={{
-							width: '24px',
-							color: '#fff',
+							zIndex: 1,
+							cursor: 'pointer',
+							display: 'flex',
+							alignItems: 'center',
+							justifyContent: 'center',
+							marginRight: `-${ds.noteBtnMlAbs}px`,
+							padding: '9px',
+							borderRadius: '50%',
+							border: '1px solid #fff',
+							boxShadow: 'rgba(255, 255, 255, 0.2) 0px 2px 8px 0px',
+							backgroundColor: '#4a4a4a',
 						}}
-					/>
-				</div>
-				<div
-					className="highlighController_colors"
-					style={{
-						display: 'flex',
-						padding: '6px',
-						paddingLeft: '18px',
-						borderRadius: '0 10px 10px 0',
-						border: '1px solid #fff',
-						boxShadow: 'rgba(255, 255, 255, 0.2) 0px 2px 8px 0px',
-						backgroundColor: '#d4d4bf',
-					}}
-				>
-					{colors.map(({ color }, index) => (
-						<div
-							key={index}
-							onClick={() => onSelectColor(color, watch('note'))}
-							className="highlighController_color"
+					>
+						<CalendarIcon
 							style={{
-								cursor: 'pointer',
-								margin: '0 2px',
 								width: '24px',
-								height: '24px',
-								borderRadius: '50%',
-								backgroundColor: color,
+								color: '#fff',
 							}}
 						/>
-					))}
-					<SettingsIcon
-						onClick={() => openTabDispatcher({ url: ROOT_OPTIONS_ROUTE })}
+					</div>
+					<div
 						style={{
-							cursor: 'pointer',
-							margin: '0px 2px',
-							width: '24px',
-							color: '#4a4a4a',
-							paddingLeft: '4px',
-							borderLeft: '1px solid #4a4a4a',
+							display: 'flex',
+							padding: '6px',
+							paddingLeft: `${ds.noteBtnMlAbs}px`,
+							borderRadius: '10px',
+							border: '1px solid #fff',
+							boxShadow: 'rgba(255, 255, 255, 0.2) 0px 2px 8px 0px',
+							backgroundColor: '#d4d4bf',
 						}}
-					/>
+					>
+						<ul
+							className="highlighController_colors"
+							style={{
+								display: 'flex',
+								flexWrap: 'wrap',
+								padding: 0,
+								margin: 0,
+							}}
+						>
+							{colors.map(({ color }, index) => (
+								<li
+									key={index}
+									className="highlighController_color"
+									style={{
+										listStyle: 'none',
+										flex: '0 1 23px',
+										cursor: 'pointer',
+										margin: '1px 1.5px',
+									}}
+								>
+									<div
+										key={index}
+										onClick={() => onSelectColor(color, watch('note'))}
+										style={{
+											width: '23px',
+											height: '23px',
+											borderRadius: '50%',
+											backgroundColor: color,
+										}}
+									/>
+								</li>
+							))}
+						</ul>
+						<SettingsIcon
+							onClick={() => openTabDispatcher({ url: ROOT_OPTIONS_ROUTE })}
+							style={{
+								cursor: 'pointer',
+								margin: '1px 2px',
+								width: '24px',
+								color: '#4a4a4a',
+								paddingLeft: '4px',
+								borderLeft: '1px solid #4a4a4a',
+							}}
+						/>
+					</div>
 				</div>
-			</div>
-			{showNoteField && (
-				<ReactTextareaAutosize
-					minRows={3}
-					{...register('note')}
-					placeholder="Note..."
-					style={{
-						width: '215px',
-						margin: '3px',
-						padding: '6px',
-						backgroundColor: '#d4d4bf',
-						borderRadius: '4px',
-						resize: 'none',
-					}}
-					rows={5}
-				/>
-			)}
-		</section>
+				{showNoteField && (
+					<ReactTextareaAutosize
+						minRows={3}
+						{...register('note')}
+						placeholder="Note..."
+						style={{
+							position: 'absolute',
+							width: `${ds.controllerWidth - 15}px`,
+							marginTop: '4px',
+							marginLeft: `${ds.noteTextareaMl}px`,
+							padding: '6px',
+							backgroundColor: '#d4d4bf',
+							borderRadius: '4px',
+							resize: 'none',
+						}}
+						rows={5}
+					/>
+				)}
+			</section>
+		</>
 	);
 }

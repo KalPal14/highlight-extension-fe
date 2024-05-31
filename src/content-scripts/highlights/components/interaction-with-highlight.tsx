@@ -59,7 +59,7 @@ export default function InteractionWithHighlight(): JSX.Element {
 		}
 	}
 
-	function onHighlightClickHandler({ target, clientX, clientY }: MouseEvent): void {
+	function onHighlightClickHandler({ target, clientX, pageY }: MouseEvent): void {
 		if (!target) return;
 
 		if (document.getSelection()?.type === 'Range') return;
@@ -75,7 +75,7 @@ export default function InteractionWithHighlight(): JSX.Element {
 		setHighlightElementSetDispatcher((prevState) => !prevState);
 		setMouseСoordinates({
 			x: clientX,
-			y: clientY,
+			y: pageY,
 		});
 	}
 
@@ -189,7 +189,7 @@ export default function InteractionWithHighlight(): JSX.Element {
 		return (
 			<HighlightsController
 				clientX={mouseСoordinates.x}
-				clientY={mouseСoordinates.y}
+				pageY={mouseСoordinates.y}
 				note={currentHighlightElement.note ?? undefined}
 				forExistingHighlight={true}
 				onSelectColor={changeHighlightColor}

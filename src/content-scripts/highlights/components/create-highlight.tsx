@@ -29,7 +29,7 @@ export default function CreateHighlight(): JSX.Element {
 		};
 	}, []);
 
-	function selectionHandler({ target, clientX, clientY }: MouseEvent): void {
+	function selectionHandler({ target, clientX, pageY }: MouseEvent): void {
 		if ((target as HTMLElement).id === 'highlights-ext-container') return;
 
 		const newSelection = document.getSelection();
@@ -42,7 +42,7 @@ export default function CreateHighlight(): JSX.Element {
 		setSelectedRange(newRange);
 		setMouseСoordinates({
 			x: clientX,
-			y: clientY,
+			y: pageY,
 		});
 	}
 
@@ -90,7 +90,7 @@ export default function CreateHighlight(): JSX.Element {
 		return (
 			<HighlightsController
 				clientX={mouseСoordinates.x}
-				clientY={mouseСoordinates.y}
+				pageY={mouseСoordinates.y}
 				onSelectColor={createHighlight}
 				onControllerClose={onControllerClose}
 			/>
