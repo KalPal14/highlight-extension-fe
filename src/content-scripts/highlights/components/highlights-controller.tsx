@@ -89,7 +89,7 @@ export default function HighlightsController({
 	function calculateDynamicStyles(): IHighlightControllerDynamicStyles {
 		const colorBlockWidth = 26;
 		const restControllerWidth = 79;
-		const rightIndent = 20;
+		const rightIndent = 30;
 		const maxColorsInLine = 8;
 
 		const colorsInOneLine = getColorsInOneLineAmount();
@@ -193,6 +193,7 @@ export default function HighlightsController({
 							className="highlighController_colors"
 							style={{
 								display: 'flex',
+								maxWidth: '208px',
 								flexWrap: 'wrap',
 								padding: 0,
 								margin: 0,
