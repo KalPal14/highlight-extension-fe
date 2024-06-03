@@ -1,7 +1,9 @@
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 
+import CHROME_STOREGE_KEYS from '../constants/chrome-storage-keys';
+
 export default function useCrossExtState<TState>(
-	stateKey: string,
+	stateKey: keyof typeof CHROME_STOREGE_KEYS,
 	defaultValue: TState
 ): [TState, Dispatch<SetStateAction<TState>>] {
 	const isNewSession = useRef(true);

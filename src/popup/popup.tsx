@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Button, Tooltip } from '@chakra-ui/react';
 import { SettingsIcon } from '@chakra-ui/icons';
 
@@ -8,24 +8,13 @@ import LoginSection from './components/login-section';
 
 import openTab from '@/common/helpers/open-tab.helper';
 import { ROOT_OPTIONS_ROUTE } from '@/common/constants/routes/options';
+import useCrossExtState from '@/common/hooks/cross-ext-state.hook';
 
 export default function Popup(): JSX.Element {
-	const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-	useEffect(() => {
-		loginCheck();
-	}, []);
-
-	async function loginCheck(): Promise<void> {
-		const { token } = await chrome.storage.local.get('token');
-		setIsLoggedIn(Boolean(token));
-	}
+	const [jwt, setJwt] = useCrossExtState<string | null>('jwt', null);
 
 	async function logout(): Promise<void> {
-		await chrome.storage.local.set({
-			token: null,
-		});
-		setIsLoggedIn(false);
+		setJwt(null);
 	}
 
 	return (
@@ -45,8 +34,8 @@ export default function Popup(): JSX.Element {
 					/>
 				</Tooltip>
 			</header>
-			{!isLoggedIn && <LoginSection />}
-			{isLoggedIn && (
+			{!jwt && <LoginSection />}
+			{jwt && (
 				<section className="popup_logout">
 					<Button
 						onClick={logout}

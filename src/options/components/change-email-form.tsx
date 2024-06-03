@@ -10,6 +10,7 @@ import TextField from '@/common/ui/fields/text-field';
 import AccordionForm from '@/common/ui/forms/accordion-form';
 import { HTTPError } from '@/errors/http-error/http-error';
 import httpErrHandler from '@/errors/http-error/http-err-handler';
+import useCrossExtState from '@/common/hooks/cross-ext-state.hook';
 
 export interface IChangeEmailFormProps {
 	currentEmail: string;
@@ -33,6 +34,8 @@ export default function ChangeEmailForm({
 		setError,
 	} = useFormReturnValue;
 
+	const [, setJwt] = useCrossExtState<string | null>('jwt', null);
+
 	async function onSubmit(formValues: TChangeEmailRo): Promise<boolean> {
 		const resp = await new ApiServise().patch<TChangeEmailRo, IChangeEmailDto>(
 			USERS_API_ROUTES.changeEmail,
@@ -44,9 +47,7 @@ export default function ChangeEmailForm({
 			return false;
 		}
 
-		await chrome.storage.local.set({
-			token: resp.jwt,
-		});
+		setJwt(resp.jwt);
 		onSuccess(resp.email);
 		toast({
 			title: 'Email has been successfully changed',

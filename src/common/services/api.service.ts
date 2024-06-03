@@ -1,3 +1,5 @@
+import CHROME_STOREGE_KEYS from '../constants/chrome-storage-keys';
+
 import IApiServise, { TRoLimiter } from './api.service.interface';
 
 import { HTTPError } from '@/errors/http-error/http-error';
@@ -35,13 +37,13 @@ export default class ApiServise implements IApiServise {
 
 	async get<RO extends TRoLimiter, DTO>(url: string, data?: RO): Promise<DTO | HTTPError> {
 		try {
-			const { token } = await chrome.storage.local.get('token');
+			const { jwt } = await chrome.storage.local.get(CHROME_STOREGE_KEYS.jwt);
 			const params = data ? `?${this.createSearchParams(data)}` : '';
 			const resp = await fetch(`${this.baseUrl}${url}${params}`, {
 				...this.initRequest,
 				headers: {
 					...this.initRequest.headers,
-					Authorization: `Bearer ${token}`,
+					Authorization: `Bearer ${jwt}`,
 				},
 				method: 'GET',
 			});
@@ -60,12 +62,12 @@ export default class ApiServise implements IApiServise {
 		data?: RO
 	): Promise<DTO | HTTPError> {
 		try {
-			const { token } = await chrome.storage.local.get('token');
+			const { jwt } = await chrome.storage.local.get(CHROME_STOREGE_KEYS.jwt);
 			const resp = await fetch(`${this.baseUrl}${url}`, {
 				...this.initRequest,
 				headers: {
 					...this.initRequest.headers,
-					Authorization: `Bearer ${token}`,
+					Authorization: `Bearer ${jwt}`,
 				},
 				method,
 				body: JSON.stringify(data),

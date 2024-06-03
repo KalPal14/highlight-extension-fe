@@ -13,20 +13,23 @@ import { USERS_API_ROUTES } from '@/common/constants/api-routes/users';
 import IGetUserInfoDto from '@/common/types/dto/users//get-user-info.interface';
 import { HTTPError } from '@/errors/http-error/http-error';
 import { DEF_COLORS } from '@/common/constants/default-values/colors';
+import useCrossExtState from '@/common/hooks/cross-ext-state.hook';
 
 const OptionsPage = (): JSX.Element => {
+	const [jwt] = useCrossExtState<string | null>('jwt', null);
+
 	const [userInfo, setUserInfo] = useState<IGetUserInfoDto | null>(null);
 
 	useEffect(() => {
-		chrome.storage.onChanged.addListener(getUserInfo);
 		getUserInfo();
-
-		return () => chrome.storage.onChanged.removeListener(getUserInfo);
-	}, []);
+	}, [jwt]);
 
 	async function getUserInfo(): Promise<void> {
 		const resp = await new ApiServise().get<null, IGetUserInfoDto>(USERS_API_ROUTES.getUserInfo);
-		if (resp instanceof HTTPError) return;
+		if (resp instanceof HTTPError) {
+			setUserInfo(null);
+			return;
+		}
 		setUserInfo(resp);
 	}
 

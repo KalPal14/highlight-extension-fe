@@ -10,6 +10,7 @@ import OutsideClickAlert from '@/common/ui/alerts/outside-click-alert';
 import { USERS_API_ROUTES } from '@/common/constants/api-routes/users';
 import httpErrHandler from '@/errors/http-error/http-err-handler';
 import IRegistrationDto from '@/common/types/dto/users/registration.interface';
+import useCrossExtState from '@/common/hooks/cross-ext-state.hook';
 
 export default function LoginForm(): JSX.Element {
 	const {
@@ -18,6 +19,8 @@ export default function LoginForm(): JSX.Element {
 		formState: { errors, isSubmitting },
 		setError,
 	} = useForm<TRegistrationRo>();
+
+	const [, setJwt] = useCrossExtState<string | null>('jwt', null);
 
 	const [errAlerMsg, setErrAlertMsg] = useState<string | null>(null);
 
@@ -31,9 +34,7 @@ export default function LoginForm(): JSX.Element {
 			return;
 		}
 
-		await chrome.storage.local.set({
-			token: resp.jwt,
-		});
+		setJwt(resp.jwt);
 	}
 
 	function handleErr(err: HTTPError): void {

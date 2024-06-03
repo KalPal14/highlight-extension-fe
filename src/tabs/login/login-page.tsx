@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { Text, Heading, ScaleFade } from '@chakra-ui/react';
 
@@ -6,34 +6,15 @@ import './login.scss';
 import LoginForm from './components/login-form';
 
 import { TABS_ROUTES } from '@/common/constants/routes/tabs';
-import HighAlert, { IHighAlertProps } from '@/common/ui/alerts/high-alert';
+import HighAlert from '@/common/ui/alerts/high-alert';
+import useCrossExtState from '@/common/hooks/cross-ext-state.hook';
 
 export default function LoginPage(): JSX.Element {
-	const [highAlert, setHighAlert] = useState<IHighAlertProps | null>(null);
-
-	useEffect(() => {
-		chrome.storage.onChanged.addListener(loginCheck);
-		loginCheck();
-
-		return () => chrome.storage.onChanged.removeListener(loginCheck);
-	}, []);
-
-	async function loginCheck(): Promise<void> {
-		const { token } = await chrome.storage.local.get('token');
-		if (token) {
-			setHighAlert({
-				title: 'You have successfully logged in',
-				description:
-					'You can close this tab. To log in to another account, log out of the current one',
-			});
-			return;
-		}
-		setHighAlert(null);
-	}
+	const [jwt] = useCrossExtState<string | null>('jwt', null);
 
 	return (
 		<div className="loginPage">
-			{!highAlert && (
+			{!jwt && (
 				<section className="loginPage_formSection">
 					<Heading as="h1">Log in</Heading>
 					<Text>
@@ -49,16 +30,16 @@ export default function LoginPage(): JSX.Element {
 					<LoginForm />
 				</section>
 			)}
-			{Boolean(highAlert) && (
+			{Boolean(jwt) && (
 				<ScaleFade
 					initialScale={0.9}
-					in={Boolean(highAlert)}
+					in={Boolean(jwt)}
 					className="loginPage_alert"
 				>
 					<HighAlert
-						title={highAlert!.title}
-						description={highAlert!.description}
-						status={highAlert?.status}
+						title="You have successfully logged in"
+						description="You can close this tab. To log in to another account, log out of the current one"
+						status="success"
 					/>
 				</ScaleFade>
 			)}
