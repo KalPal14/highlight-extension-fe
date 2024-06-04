@@ -8,10 +8,8 @@ import IHighlightControllerDynamicStyles from '../types/highlight-controller-dyn
 import { DEF_COLORS } from '@/common/constants/default-values/colors';
 import { ROOT_OPTIONS_ROUTE } from '@/common/constants/routes/options';
 import openTabDispatcher from '@/service-worker/handlers/open-tab/open-tab.dispatcher';
-import apiRequestDispatcher from '@/service-worker/handlers/api-request/api-request.dispatcher';
-import { USERS_API_ROUTES } from '@/common/constants/api-routes/users';
-import IApiRequestOutcomeMsg from '@/service-worker/types/outcome-msgs/api-request.outcome-msg.interface';
-import IGetUserInfoDto from '@/common/types/dto/users/get-user-info.interface';
+import useCrossExtState from '@/common/hooks/cross-ext-state.hook';
+import IBaseUserDto from '@/common/types/dto/users/base/base-user-info.interface';
 
 export interface IHighlightsControllerProps {
 	clientX: number;
@@ -39,43 +37,28 @@ export default function HighlightsController({
 			note,
 		},
 	});
+	const [currentUser] = useCrossExtState<IBaseUserDto | null>('currentUser', null);
 
 	const [showNoteField, setShowNoteField] = useState(Boolean(note));
 	const [colors, setColors] = useState(DEF_COLORS);
 
 	useEffect(() => {
-		chrome.runtime.onMessage.addListener(apiResponseMsgHandler);
-		apiRequestDispatcher({
-			contentScriptsHandler: 'getUserInfoHandler',
-			method: 'get',
-			url: USERS_API_ROUTES.getUserInfo,
-		});
-
 		return () => onControllerClose(firstColorRef.current, watch('note'));
 	}, []);
 
 	useEffect(() => {
+		if (currentUser?.colors) {
+			setColors(currentUser.colors);
+			firstColorRef.current = currentUser.colors[0].color;
+			return;
+		}
+		setColors(DEF_COLORS);
+		firstColorRef.current = DEF_COLORS[0].color;
+	}, [currentUser?.colors]);
+
+	useEffect(() => {
 		setShowNoteField(Boolean(note));
 	}, [note]);
-
-	function apiResponseMsgHandler({
-		serviceWorkerHandler,
-		contentScriptsHandler,
-		data,
-	}: IApiRequestOutcomeMsg): void {
-		if (serviceWorkerHandler !== 'apiRequest') return;
-		switch (contentScriptsHandler) {
-			case 'getUserInfoHandler':
-				getUserInfoHandler(data as IGetUserInfoDto);
-				return;
-		}
-	}
-
-	function getUserInfoHandler(userInfo: IGetUserInfoDto): void {
-		const newColors = userInfo.colors.length ? userInfo.colors : DEF_COLORS;
-		setColors(newColors);
-		firstColorRef.current = newColors[0].color;
-	}
 
 	function getColorsInOneLineAmount(): number {
 		if (showNoteField && colors.length < 5) {

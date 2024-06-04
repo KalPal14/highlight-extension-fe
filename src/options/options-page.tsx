@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Alert, AlertIcon, Heading, Text } from '@chakra-ui/react';
 
 import './options.scss';
@@ -8,30 +8,12 @@ import ChangeUsernameForm from './components/change-username-form';
 import ChangePasswordForm from './components/change-password-form';
 import ChangeColorsForm from './components/change-colors-form';
 
-import ApiServise from '@/common/services/api.service';
-import { USERS_API_ROUTES } from '@/common/constants/api-routes/users';
-import IGetUserInfoDto from '@/common/types/dto/users//get-user-info.interface';
-import { HTTPError } from '@/errors/http-error/http-error';
 import { DEF_COLORS } from '@/common/constants/default-values/colors';
 import useCrossExtState from '@/common/hooks/cross-ext-state.hook';
+import IBaseUserDto from '@/common/types/dto/users/base/base-user-info.interface';
 
 const OptionsPage = (): JSX.Element => {
-	const [jwt] = useCrossExtState<string | null>('jwt', null);
-
-	const [userInfo, setUserInfo] = useState<IGetUserInfoDto | null>(null);
-
-	useEffect(() => {
-		getUserInfo();
-	}, [jwt]);
-
-	async function getUserInfo(): Promise<void> {
-		const resp = await new ApiServise().get<null, IGetUserInfoDto>(USERS_API_ROUTES.getUserInfo);
-		if (resp instanceof HTTPError) {
-			setUserInfo(null);
-			return;
-		}
-		setUserInfo(resp);
-	}
+	const [currentUser, setCurrentUser] = useCrossExtState<IBaseUserDto | null>('currentUser', null);
 
 	return (
 		<div className="options">
@@ -50,7 +32,7 @@ const OptionsPage = (): JSX.Element => {
 				>
 					User info
 				</Heading>
-				{!userInfo && (
+				{!currentUser && (
 					<Alert
 						status="warning"
 						mt={3}
@@ -59,40 +41,40 @@ const OptionsPage = (): JSX.Element => {
 						Sorry. We were unable to load your information. Make sure you are logged in.
 					</Alert>
 				)}
-				{userInfo && (
+				{currentUser && (
 					<>
 						<ChangeEmailForm
-							currentEmail={userInfo.email}
+							currentEmail={currentUser.email}
 							onSuccess={(email) =>
-								setUserInfo({
-									...userInfo,
+								setCurrentUser({
+									...currentUser,
 									email,
 								})
 							}
 						/>
 						<ChangeUsernameForm
-							currentUsername={userInfo.username}
+							currentUsername={currentUser.username}
 							onSuccess={(username) =>
-								setUserInfo({
-									...userInfo,
+								setCurrentUser({
+									...currentUser,
 									username,
 								})
 							}
 						/>
 						<ChangePasswordForm
-							passwordUpdatedAt={userInfo.passwordUpdatedAt}
+							passwordUpdatedAt={currentUser.passwordUpdatedAt}
 							onSuccess={(passwordUpdatedAt) =>
-								setUserInfo({
-									...userInfo,
+								setCurrentUser({
+									...currentUser,
 									passwordUpdatedAt,
 								})
 							}
 						/>
 						<ChangeColorsForm
-							currentColors={userInfo.colors.length ? userInfo.colors : DEF_COLORS}
+							currentColors={currentUser.colors.length ? currentUser.colors : DEF_COLORS}
 							onSuccess={(colors) =>
-								setUserInfo({
-									...userInfo,
+								setCurrentUser({
+									...currentUser,
 									colors,
 								})
 							}

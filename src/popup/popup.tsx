@@ -9,12 +9,15 @@ import LoginSection from './components/login-section';
 import openTab from '@/common/helpers/open-tab.helper';
 import { ROOT_OPTIONS_ROUTE } from '@/common/constants/routes/options';
 import useCrossExtState from '@/common/hooks/cross-ext-state.hook';
+import IBaseUserDto from '@/common/types/dto/users/base/base-user-info.interface';
 
 export default function Popup(): JSX.Element {
 	const [jwt, setJwt] = useCrossExtState<string | null>('jwt', null);
+	const [, setCurrentUser] = useCrossExtState<IBaseUserDto | null>('currentUser', null);
 
 	async function logout(): Promise<void> {
 		setJwt(null);
+		setCurrentUser(null);
 	}
 
 	return (

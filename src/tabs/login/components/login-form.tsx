@@ -11,6 +11,7 @@ import { USERS_API_ROUTES } from '@/common/constants/api-routes/users';
 import httpErrHandler from '@/errors/http-error/http-err-handler';
 import ILoginDto from '@/common/types/dto/users/login.interface';
 import useCrossExtState from '@/common/hooks/cross-ext-state.hook';
+import IBaseUserDto from '@/common/types/dto/users/base/base-user-info.interface';
 
 export default function LoginForm(): JSX.Element {
 	const {
@@ -21,6 +22,7 @@ export default function LoginForm(): JSX.Element {
 	} = useForm<TLoginRo>();
 
 	const [, setJwt] = useCrossExtState<string | null>('jwt', null);
+	const [, setCurrentUser] = useCrossExtState<IBaseUserDto | null>('currentUser', null);
 
 	const [errAlerMsg, setErrAlertMsg] = useState<string | null>(null);
 
@@ -29,12 +31,15 @@ export default function LoginForm(): JSX.Element {
 			USERS_API_ROUTES.login,
 			formValues
 		);
+
 		if (resp instanceof HTTPError) {
 			handleErr(resp);
 			return;
 		}
 
-		setJwt(resp.jwt);
+		const { jwt, ...restUserInfo } = resp;
+		setJwt(jwt);
+		setCurrentUser(restUserInfo);
 	}
 
 	function handleErr(err: HTTPError): void {
