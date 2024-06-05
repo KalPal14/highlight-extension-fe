@@ -11,23 +11,37 @@ import { PAGES_API_ROUTES } from '@/common/constants/api-routes/pages';
 import TGetPageRo from '@/common/types/ro/pages/get-page.type';
 import apiRequestDispatcher from '@/service-worker/handlers/api-request/api-request.dispatcher';
 import IApiRequestOutcomeMsg from '@/service-worker/types/outcome-msgs/api-request.outcome-msg.interface';
+import useCrossExtState from '@/common/hooks/cross-ext-state.hook';
 
 export default function Highlights(): JSX.Element {
+	const [jwt] = useCrossExtState<null | string>('jwt', null);
+
 	useEffect(() => {
 		chrome.runtime.onMessage.addListener(apiResponseMsgHandler);
-		apiRequestDispatcher<TGetPageRo>({
-			contentScriptsHandler: 'getPageHandler',
-			method: 'get',
-			url: PAGES_API_ROUTES.getPage,
-			data: {
-				url: location.href,
-			},
-		});
 
 		return () => {
 			chrome.runtime.onMessage.removeListener(apiResponseMsgHandler);
 		};
 	}, []);
+
+	useEffect(() => {
+		if (jwt) {
+			apiRequestDispatcher<TGetPageRo>({
+				contentScriptsHandler: 'getPageHandler',
+				method: 'get',
+				url: PAGES_API_ROUTES.getPage,
+				data: {
+					url: location.href,
+				},
+			});
+			return;
+		}
+
+		const highlights = document.getElementsByTagName('WEB-HIGHLIGHT');
+		if (highlights.length) {
+			window.location.reload();
+		}
+	}, [jwt]);
 
 	function apiResponseMsgHandler({
 		serviceWorkerHandler,
@@ -43,9 +57,7 @@ export default function Highlights(): JSX.Element {
 	}
 
 	function getPageHandler(page: TGetPageDto): void {
-		if (page.id === null) {
-			return;
-		}
+		if (page.id === null) return;
 		drawHighlightsFromDto(page.highlights);
 	}
 

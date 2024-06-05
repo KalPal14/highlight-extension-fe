@@ -47,7 +47,7 @@ export default function HighlightsController({
 	}, []);
 
 	useEffect(() => {
-		if (currentUser?.colors) {
+		if (currentUser?.colors.length) {
 			setColors(currentUser.colors);
 			firstColorRef.current = currentUser.colors[0].color;
 			return;
