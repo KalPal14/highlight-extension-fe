@@ -21,6 +21,7 @@ module.exports = {
 	entry: {
 		popup: path.resolve('src/popup/index.tsx'),
 		options: path.resolve('src/options/index.tsx'),
+		sidepanel: path.resolve('src/sidepanel/index.tsx'),
 		highlights: path.resolve('src/content-scripts/highlights/index.tsx'),
 		tabs: path.resolve('src/tabs/index.tsx'),
 		service_worker: path.resolve('src/service-worker/index.ts'),
@@ -66,7 +67,7 @@ module.exports = {
 				},
 			],
 		}),
-		...getHtmlPlugins(['popup', 'options', 'tabs']),
+		...getHtmlPlugins(['popup', 'options', 'tabs', 'sidepanel']),
 	],
 	resolve: {
 		extensions: ['.tsx', '.js', '.ts'],

@@ -11,7 +11,7 @@
 		"postinstall": "husky"
 	},
 	"devDependencies": {
-		"@types/chrome": "^0.0.188",
+		"@types/chrome": "^0.0.268",
 		"@types/react": "^18.0.9",
 		"@types/react-dom": "^18.0.4",
 		"@typescript-eslint/eslint-plugin": "^7.2.0",

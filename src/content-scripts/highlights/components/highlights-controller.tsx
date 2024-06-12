@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { CalendarIcon, DeleteIcon, SettingsIcon } from '@chakra-ui/icons';
+import { EditIcon, DeleteIcon, SettingsIcon, ExternalLinkIcon } from '@chakra-ui/icons';
 import { useForm } from 'react-hook-form';
 import ReactTextareaAutosize from 'react-textarea-autosize';
 
@@ -10,6 +10,7 @@ import { ROOT_OPTIONS_ROUTE } from '@/common/constants/routes/options';
 import openTabDispatcher from '@/service-worker/handlers/open-tab/open-tab.dispatcher';
 import useCrossExtState from '@/common/hooks/cross-ext-state.hook';
 import IBaseUserDto from '@/common/types/dto/users/base/base-user-info.interface';
+import openSidepanelDispatcher from '@/service-worker/handlers/open-sidepanel/open-sidepanel.dispatcher';
 
 export interface IHighlightsControllerProps {
 	clientX: number;
@@ -97,7 +98,6 @@ export default function HighlightsController({
 			{forExistingHighlight && (
 				<section
 					className="highlighControllerTopPanel"
-					onClick={onDeleteClick}
 					style={{
 						zIndex: '999',
 						position: 'absolute',
@@ -112,10 +112,21 @@ export default function HighlightsController({
 					}}
 				>
 					<DeleteIcon
+						onClick={onDeleteClick}
 						style={{
 							cursor: 'pointer',
 							width: '24px',
 							color: '#4a4a4a',
+							margin: '0 1.5px',
+						}}
+					/>
+					<ExternalLinkIcon
+						onClick={(): void => openSidepanelDispatcher({ url: window.location.href })}
+						style={{
+							cursor: 'pointer',
+							width: '24px',
+							color: '#4a4a4a',
+							margin: '0 1.5px',
 						}}
 					/>
 				</section>
@@ -147,14 +158,14 @@ export default function HighlightsController({
 							alignItems: 'center',
 							justifyContent: 'center',
 							marginRight: `-${ds.noteBtnMlAbs}px`,
-							padding: '9px',
+							padding: '8px 8px 10px 10px',
 							borderRadius: '50%',
 							border: '1px solid #fff',
 							boxShadow: 'rgba(255, 255, 255, 0.2) 0px 2px 8px 0px',
 							backgroundColor: '#4a4a4a',
 						}}
 					>
-						<CalendarIcon
+						<EditIcon
 							style={{
 								width: '24px',
 								color: '#fff',
