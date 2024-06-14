@@ -5,6 +5,7 @@ import { Divider, Text } from '@chakra-ui/react';
 import IChangeHighlightForm from '../types/change-highlight-form.interface';
 
 import IBaseHighlightDto from '@/common/types/dto/highlights/base/base-highlight.interface';
+import useCrossExtState from '@/common/hooks/cross-ext-state.hook';
 
 export interface IHighlightsListItemProps {
 	register: UseFormRegister<IChangeHighlightForm>;
@@ -17,12 +18,19 @@ export default function HighlightsListItem({
 	highlight,
 	index,
 }: IHighlightsListItemProps): JSX.Element {
+	const [, setScrollHighlightId] = useCrossExtState<`web-highlight-${number}` | null>(
+		'scrollHighlightId',
+		null
+	);
+
 	return (
 		<div
 			{...register(`highlights.${index}`, {})}
 			className="highlightsList_itemContent"
 		>
 			<Text
+				onClick={() => setScrollHighlightId(`web-highlight-${highlight.id}`)}
+				cursor="pointer"
 				fontSize="md"
 				color={highlight.color}
 			>

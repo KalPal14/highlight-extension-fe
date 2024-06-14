@@ -28,6 +28,10 @@ export default function InteractionWithHighlight(): JSX.Element {
 		'deletedHighlight',
 		null
 	);
+	const [scrollHighlightId] = useCrossExtState<`web-highlight-${number}` | null>(
+		'scrollHighlightId',
+		null
+	);
 
 	const highlightElementRef = useRef<IHighlightElementData | null>(null);
 	const highlightElementToSetRef = useRef<IHighlightElementData | null>(null);
@@ -49,6 +53,31 @@ export default function InteractionWithHighlight(): JSX.Element {
 			chrome.runtime.onMessage.removeListener(apiResponseMsgHandler);
 		};
 	}, []);
+
+	useEffect(() => {
+		if (!scrollHighlightId) return;
+
+		const scrollHighlights = document.querySelectorAll(`#${scrollHighlightId}`);
+		const firsScrollHighlight = scrollHighlights[0];
+		if (!firsScrollHighlight) return;
+
+		const firsScrollHighlightCoord = firsScrollHighlight.getBoundingClientRect();
+		window.scrollTo({ top: firsScrollHighlightCoord.top - 100, behavior: 'smooth' });
+		makeHighlightEffect(scrollHighlights);
+	}, [scrollHighlightId]);
+
+	function makeHighlightEffect(highlights: NodeListOf<Element>): void {
+		for (let i = 0; i < highlights.length; i++) {
+			const highlight = highlights.item(i) as HTMLElement;
+			const currentColor = highlight.style.backgroundColor;
+			const effectColor = currentColor.replace(/[^,]+(?=\))/, '0.9');
+
+			highlight.style.backgroundColor = effectColor;
+			setTimeout(() => {
+				highlight.style.backgroundColor = currentColor;
+			}, 1000);
+		}
+	}
 
 	useEffect(() => {
 		setCurrentHighlightElement(highlightElementToSetRef.current);

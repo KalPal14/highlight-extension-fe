@@ -6,6 +6,7 @@ export default function createHighlighterElement(
 ): HTMLSpanElement {
 	const webHighlight = document.createElement('web-highlight');
 	webHighlight.style.backgroundColor = `${color}${80}`;
+	webHighlight.style.transition = 'background-color 300ms linear';
 	webHighlight.id = `web-highlight-${id}`;
 	webHighlight.innerText = textToHighlight;
 	webHighlight.setAttribute('data-higlight-note', note ?? '');

@@ -4,6 +4,7 @@ const CHROME_STOREGE_KEYS = {
 	createdHighlight: 'createHighlight',
 	deletedHighlight: 'deletedHighlight',
 	updatedHighlight: 'updatedHighlight',
+	scrollHighlightId: 'scrollHighlightId',
 };
 
 export default CHROME_STOREGE_KEYS;
