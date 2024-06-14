@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
+import { Heading } from '@chakra-ui/react';
 
 import IChangeHighlightForm from '../types/change-highlight-form.interface';
 
@@ -68,6 +69,18 @@ export default function HighlightsList(): JSX.Element {
 			highlight,
 		}));
 		setValue('highlights', highlights ?? []);
+	}
+
+	if (!fields.length) {
+		return (
+			<Heading
+				as="h6"
+				size="md"
+				textAlign="center"
+			>
+				This list of highlights is empty
+			</Heading>
+		);
 	}
 
 	return (
