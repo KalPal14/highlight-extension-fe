@@ -1,0 +1,16 @@
+.highlightsList {
+   padding: 16px 8px;
+
+   p {
+      line-height: 1.2rem;
+   }
+
+   &_itemContent {
+      padding: 2px 0 2px 4px;
+
+      .highlightsList_itemContentDivider {
+         margin-top: 4px;
+         border-bottom-width: 2px;
+      }
+   }
+}

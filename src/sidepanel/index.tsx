@@ -4,6 +4,8 @@ import { ChakraProvider } from '@chakra-ui/react';
 
 import Sidepanel from './sidepanel';
 
+import './sidepanel.scss';
+
 function init(): void {
 	const rootContainer = document.createElement('div');
 	document.body.appendChild(rootContainer);

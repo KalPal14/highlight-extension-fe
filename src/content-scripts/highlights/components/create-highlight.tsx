@@ -11,8 +11,14 @@ import TCreateHighlightRo from '@/common/types/ro/highlights/create-highlight.ty
 import ICreateHighlightDto from '@/common/types/dto/highlights/create-highlight.interface';
 import apiRequestDispatcher from '@/service-worker/handlers/api-request/api-request.dispatcher';
 import IApiRequestOutcomeMsg from '@/service-worker/types/outcome-msgs/api-request.outcome-msg.interface';
+import useCrossExtState from '@/common/hooks/cross-ext-state.hook';
 
 export default function CreateHighlight(): JSX.Element {
+	const [, setCreatedHighlight] = useCrossExtState<ICreateHighlightDto | null>(
+		'createdHighlight',
+		null
+	);
+
 	const [selectedRange, setSelectedRange] = useState<Range | null>(null);
 	const [mouseСoordinates, setMouseСoordinates] = useState({
 		x: 0,
@@ -75,6 +81,7 @@ export default function CreateHighlight(): JSX.Element {
 	}
 
 	function createHighlightRespHandler(highlight: ICreateHighlightDto): void {
+		setCreatedHighlight(highlight);
 		const highlightRange = createRangeFromHighlightDto(highlight);
 		drawHighlight(highlightRange, highlight);
 		setSelectedRange(null);

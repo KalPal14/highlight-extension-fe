@@ -17,8 +17,18 @@ import IUpdateHighlightDto from '@/common/types/dto/highlights/update-highlight.
 import IDeleteHighlightDto from '@/common/types/dto/highlights/delete-highlight.interface';
 import TGetHighlightsRo from '@/common/types/ro/highlights/get-highlights.type';
 import TGetHighlightsDto from '@/common/types/dto/highlights/get-highlights.type';
+import useCrossExtState from '@/common/hooks/cross-ext-state.hook';
 
 export default function InteractionWithHighlight(): JSX.Element {
+	const [, setUpdatdHighlight] = useCrossExtState<IUpdateHighlightDto | null>(
+		'updatedHighlight',
+		null
+	);
+	const [, setDeletedHighlight] = useCrossExtState<IDeleteHighlightDto | null>(
+		'deletedHighlight',
+		null
+	);
+
 	const highlightElementRef = useRef<IHighlightElementData | null>(null);
 	const highlightElementToSetRef = useRef<IHighlightElementData | null>(null);
 
@@ -104,6 +114,7 @@ export default function InteractionWithHighlight(): JSX.Element {
 		incomeHighlightData: TUpdateHighlightRo
 	): void {
 		if (!incomeHighlightData.text) {
+			setUpdatdHighlight(newHighlightData);
 			updateHighlighterElement(newHighlightData);
 		}
 	}
@@ -156,6 +167,8 @@ export default function InteractionWithHighlight(): JSX.Element {
 	}
 
 	function deleteHighlightRespHandler(highlight: IDeleteHighlightDto): void {
+		setDeletedHighlight(highlight);
+
 		const nestedHighlightsIds: number[][] = [];
 
 		const highlighterElements = document.querySelectorAll(`#web-highlight-${highlight.id}`);
