@@ -9,7 +9,7 @@ export default function createRangeFromHighlightDto(highlight: IBaseHighlightDto
 		highlight.startContainer.indexNumber
 	];
 	const endContainerPerent = findElementsByInitialText(highlight.endContainer.text)[
-		highlight.endContainer.sameElementsAmount
+		highlight.endContainer.indexNumber
 	];
 
 	const [startContainer, startOffsetReducer] = getContainerAndOffsetReducer(

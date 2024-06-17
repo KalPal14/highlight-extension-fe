@@ -1,6 +1,7 @@
 import React from 'react';
 import { UseFormRegister } from 'react-hook-form';
-import { Divider, Text } from '@chakra-ui/react';
+import { Divider, Text, Tooltip } from '@chakra-ui/react';
+import { WarningTwoIcon } from '@chakra-ui/icons';
 
 import IChangeHighlightForm from '../types/change-highlight-form.interface';
 
@@ -22,15 +23,26 @@ export default function HighlightsListItem({
 		'scrollHighlightId',
 		null
 	);
+	const [unfoundHighlightsIds] = useCrossExtState<number[]>('unfoundHighlightsIds', []);
+
+	const unfoundHighlight = unfoundHighlightsIds.includes(highlight.id);
 
 	return (
 		<div
 			{...register(`highlights.${index}`, {})}
 			className="highlightsList_itemContent"
 		>
+			{unfoundHighlight && (
+				<Tooltip label="This note is only in the sidebar">
+					<WarningTwoIcon
+						className="highlightsList_itemWarningIcon"
+						color="orange.400"
+					/>
+				</Tooltip>
+			)}
 			<Text
 				onClick={() => setScrollHighlightId(`web-highlight-${highlight.id}`)}
-				cursor="pointer"
+				cursor={unfoundHighlight ? 'text' : 'pointer'}
 				fontSize="md"
 				color={highlight.color}
 			>

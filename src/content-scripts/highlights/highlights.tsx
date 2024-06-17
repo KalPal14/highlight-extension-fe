@@ -15,6 +15,7 @@ import useCrossExtState from '@/common/hooks/cross-ext-state.hook';
 
 export default function Highlights(): JSX.Element {
 	const [jwt] = useCrossExtState<null | string>('jwt', null);
+	const [, setUnfoundHighlightsIds] = useCrossExtState<number[]>('unfoundHighlightsIds', []);
 
 	useEffect(() => {
 		chrome.runtime.onMessage.addListener(apiResponseMsgHandler);
@@ -64,10 +65,22 @@ export default function Highlights(): JSX.Element {
 	function drawHighlightsFromDto(highlights: IBaseHighlightDto[] | null): void {
 		if (!highlights) return;
 
+		const newUnfoundHighlightsIds: number[] = [];
+
 		highlights.forEach((highlight) => {
-			const highlightRange = createRangeFromHighlightDto(highlight);
-			drawHighlight(highlightRange, highlight);
+			try {
+				const highlightRange = createRangeFromHighlightDto(highlight);
+				if (highlightRange.toString() !== highlight.text) {
+					newUnfoundHighlightsIds.push(highlight.id);
+					return;
+				}
+				drawHighlight(highlightRange, highlight);
+			} catch {
+				newUnfoundHighlightsIds.push(highlight.id);
+			}
 		});
+
+		setUnfoundHighlightsIds((prevState) => [...prevState, ...newUnfoundHighlightsIds]);
 	}
 
 	return (

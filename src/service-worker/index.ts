@@ -7,6 +7,7 @@ import openSidepanelHandler from './handlers/open-sidepanel/open-sidepanel.handl
 import IOpenSidepanelIncomeMsg from './types/income-msgs/open-sidepanel.income-msg.interface';
 
 import { TRoLimiter } from '@/common/services/api.service.interface';
+import CHROME_STOREGE_KEYS from '@/common/constants/chrome-storage-keys';
 
 chrome.runtime.onMessage.addListener(async function <RO extends TRoLimiter>(
 	msg: IBaseMsg,
@@ -26,6 +27,7 @@ chrome.runtime.onMessage.addListener(async function <RO extends TRoLimiter>(
 
 chrome.tabs.onUpdated.addListener(async (tabId, info, tab) => {
 	if (!tab.url || !tabId) return;
+	await chrome.storage.local.set({ [CHROME_STOREGE_KEYS.unfoundHighlightsIds]: [] });
 	chrome.sidePanel.setOptions({
 		tabId,
 		path: `sidepanel.html?url=${tab.url}`,
