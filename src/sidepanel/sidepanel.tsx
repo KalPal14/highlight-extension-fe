@@ -1,11 +1,11 @@
 import React from 'react';
 
-import HighlightsList from './components/highlights-list';
+import HighlightsListTabs from './components/highlights-list-tabs';
 
 export default function Sidepanel(): JSX.Element {
 	return (
 		<section className="highlightsList">
-			<HighlightsList />
+			<HighlightsListTabs />
 		</section>
 	);
 }

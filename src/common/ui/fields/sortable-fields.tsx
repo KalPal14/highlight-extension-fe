@@ -10,7 +10,7 @@ import TJsxContent from '@/common/types/jsx-content.type';
 
 export interface ISortableFieldsProps<Fields extends FieldValues> {
 	useFieldArrayReturn: UseFieldArrayReturn<Fields>;
-	fieldsList: JSX.Element[];
+	fieldsList: (JSX.Element | null)[];
 	addBtn?: {
 		text: TJsxContent;
 		value: FieldArray<Fields, ArrayPath<Fields>> | FieldArray<Fields, ArrayPath<Fields>>[];
@@ -77,11 +77,16 @@ export default function SortableFields<Fields extends FieldValues>({
 		);
 	}
 
-	function renderSortableContainer(fieldsList: JSX.Element[]): JSX.Element {
+	function renderSortableContainer(fieldsList: (JSX.Element | null)[]): JSX.Element {
 		const Container = SortableContainer(() => (
 			<>
 				<ul className="sortableFields">
-					{fieldsList.map((fields, index) => renderSortableElement(fields, index))}
+					{fieldsList.map((field, index) => {
+						if (field === null) {
+							return null;
+						}
+						return renderSortableElement(field, index);
+					})}
 				</ul>
 				{addBtn && (
 					<div className="sortableFields_addBtnContainer">

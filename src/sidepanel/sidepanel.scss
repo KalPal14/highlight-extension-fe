@@ -5,6 +5,11 @@
       line-height: 1.2rem;
    }
 
+   &_tabsListContainer {
+      display: flex;
+      justify-content: center;
+   }
+
    &_itemContent {
       padding: 2px 0 2px 4px;
 

@@ -3,6 +3,7 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import { Heading } from '@chakra-ui/react';
 
 import IChangeHighlightForm from '../types/change-highlight-form.interface';
+import THighlightsTabName from '../types/highlights-tab-name.type';
 
 import HighlightsListItem from './highlights-list-item';
 
@@ -18,7 +19,11 @@ import IDeleteHighlightDto from '@/common/types/dto/highlights/delete-highlight.
 import ICreateHighlightDto from '@/common/types/dto/highlights/create-highlight.interface';
 import IUpdateHighlightDto from '@/common/types/dto/highlights/update-highlight.interface';
 
-export default function HighlightsList(): JSX.Element {
+export interface IHighlightsListProps {
+	tabName: THighlightsTabName;
+}
+
+export default function HighlightsList({ tabName }: IHighlightsListProps): JSX.Element {
 	const pageUrl = new URL(window.location.href).searchParams.get('url');
 
 	const [createdHighlight] = useCrossExtState<ICreateHighlightDto | null>('createdHighlight', null);
@@ -27,6 +32,7 @@ export default function HighlightsList(): JSX.Element {
 		null
 	);
 	const [updatedHighlight] = useCrossExtState<IUpdateHighlightDto | null>('updatedHighlight', null);
+	const [unfoundHighlightsIds] = useCrossExtState<number[]>('unfoundHighlightsIds', []);
 
 	const { control, register, setValue } = useForm<IChangeHighlightForm>({
 		values: {
@@ -89,14 +95,31 @@ export default function HighlightsList(): JSX.Element {
 		setDeletedHighlight(resp);
 	}
 
-	if (!fields.length) {
+	function getFieldsIdsByTab(): number[] {
+		const highlightsIds = fields.map(({ highlight }) => highlight.id);
+		switch (tabName) {
+			case 'all':
+				return highlightsIds;
+			case 'found':
+				return highlightsIds.filter((id) => isFound(id));
+			case 'unfound':
+				return highlightsIds.filter((id) => !isFound(id));
+		}
+
+		function isFound(id: number): boolean {
+			return !unfoundHighlightsIds.includes(id);
+		}
+	}
+	const fieldsIdsToRender = getFieldsIdsByTab();
+
+	if (!fieldsIdsToRender.length) {
 		return (
 			<Heading
 				as="h6"
 				size="md"
 				textAlign="center"
 			>
-				This list of highlights is empty
+				This list is empty
 			</Heading>
 		);
 	}
@@ -106,14 +129,17 @@ export default function HighlightsList(): JSX.Element {
 			useFieldArrayReturn={useFieldArrayReturn}
 			showDeleteBtn={true}
 			onDelete={onDeleteHighlight}
-			fieldsList={fields.map(({ highlight }, index) => (
-				<HighlightsListItem
-					key={highlight.id}
-					register={register}
-					highlight={highlight}
-					index={index}
-				/>
-			))}
+			fieldsList={fields.map(({ highlight }, index) => {
+				if (!fieldsIdsToRender.includes(highlight.id)) return null;
+				return (
+					<HighlightsListItem
+						key={highlight.id}
+						register={register}
+						highlight={highlight}
+						index={index}
+					/>
+				);
+			})}
 		/>
 	);
 }
