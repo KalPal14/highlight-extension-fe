@@ -24,7 +24,7 @@ export default function InteractionWithHighlight(): JSX.Element {
 		'updatedHighlight',
 		null
 	);
-	const [, setDeletedHighlight] = useCrossExtState<IDeleteHighlightDto | null>(
+	const [deletedHighlight, setDeletedHighlight] = useCrossExtState<IDeleteHighlightDto | null>(
 		'deletedHighlight',
 		null
 	);
@@ -53,6 +53,11 @@ export default function InteractionWithHighlight(): JSX.Element {
 			chrome.runtime.onMessage.removeListener(apiResponseMsgHandler);
 		};
 	}, []);
+
+	useEffect(() => {
+		if (!deletedHighlight) return;
+		deleteHighlight(deletedHighlight);
+	}, [deletedHighlight]);
 
 	useEffect(() => {
 		if (!scrollHighlightId) return;
@@ -197,7 +202,10 @@ export default function InteractionWithHighlight(): JSX.Element {
 
 	function deleteHighlightRespHandler(highlight: IDeleteHighlightDto): void {
 		setDeletedHighlight(highlight);
+		deleteHighlight(highlight);
+	}
 
+	function deleteHighlight(highlight: IDeleteHighlightDto): void {
 		const nestedHighlightsIds: number[][] = [];
 
 		const highlighterElements = document.querySelectorAll(`#web-highlight-${highlight.id}`);

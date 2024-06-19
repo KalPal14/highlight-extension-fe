@@ -16,7 +16,7 @@ export interface ISortableFieldsProps<Fields extends FieldValues> {
 		value: FieldArray<Fields, ArrayPath<Fields>> | FieldArray<Fields, ArrayPath<Fields>>[];
 	};
 	showDeleteBtn?: boolean;
-	afterRemoval?: (index: number) => void;
+	onDelete?: (index: number) => void;
 }
 
 export default function SortableFields<Fields extends FieldValues>({
@@ -24,6 +24,7 @@ export default function SortableFields<Fields extends FieldValues>({
 	fieldsList,
 	addBtn,
 	showDeleteBtn,
+	onDelete,
 }: ISortableFieldsProps<Fields>): JSX.Element {
 	const { move, append, remove } = useFieldArrayReturn;
 
@@ -37,6 +38,9 @@ export default function SortableFields<Fields extends FieldValues>({
 	}
 
 	function removeElement(index: number): void {
+		if (onDelete) {
+			onDelete(index);
+		}
 		remove(index);
 	}
 
@@ -45,6 +49,7 @@ export default function SortableFields<Fields extends FieldValues>({
 			<DragHandleIcon
 				className="sortableFields_iconBtn"
 				cursor="grab"
+				color="gray.600"
 			/>
 		));
 		const Element = SortableElement(() => (
@@ -58,6 +63,7 @@ export default function SortableFields<Fields extends FieldValues>({
 						<DeleteIcon
 							onClick={() => removeElement(index)}
 							className="sortableFields_iconBtn"
+							color="gray.600"
 						/>
 					)}
 				</div>
