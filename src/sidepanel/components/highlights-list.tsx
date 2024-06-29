@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { Heading } from '@chakra-ui/react';
+import { sortBy } from 'lodash';
 
 import IChangeHighlightForm from '../types/change-highlight-form.interface';
 import THighlightsTabName from '../types/highlights-tab-name.type';
@@ -18,6 +19,7 @@ import { HIGHLIGHTS_API_ROUTES } from '@/common/constants/api-routes/highlights'
 import IDeleteHighlightDto from '@/common/types/dto/highlights/delete-highlight.interface';
 import ICreateHighlightDto from '@/common/types/dto/highlights/create-highlight.interface';
 import IUpdateHighlightDto from '@/common/types/dto/highlights/update-highlight.interface';
+import TIndividualUpdateHighlightsRo from '@/common/types/ro/highlights/individual-update-highlights.type';
 
 export interface IHighlightsListProps {
 	tabName: THighlightsTabName;
@@ -34,7 +36,7 @@ export default function HighlightsList({ tabName }: IHighlightsListProps): JSX.E
 	const [updatedHighlight] = useCrossExtState<IUpdateHighlightDto | null>('updatedHighlight', null);
 	const [unfoundHighlightsIds] = useCrossExtState<number[]>('unfoundHighlightsIds', []);
 
-	const { control, register, setValue } = useForm<IChangeHighlightForm>({
+	const { control, register, setValue, watch } = useForm<IChangeHighlightForm>({
 		values: {
 			highlights: [],
 		},
@@ -82,7 +84,8 @@ export default function HighlightsList({ tabName }: IHighlightsListProps): JSX.E
 		const highlights = resp.highlights?.map((highlight) => ({
 			highlight,
 		}));
-		setValue('highlights', highlights ?? []);
+		const sortedHighlights = sortBy(highlights, ({ highlight }) => highlight.order);
+		setValue('highlights', sortedHighlights);
 	}
 
 	async function onDeleteHighlight(index: number): Promise<void> {
@@ -93,6 +96,27 @@ export default function HighlightsList({ tabName }: IHighlightsListProps): JSX.E
 		);
 		if (resp instanceof HTTPError) return;
 		setDeletedHighlight(resp);
+	}
+
+	async function onHighlightsSortEnd(): Promise<void> {
+		const highlights = watch('highlights');
+		const dataToUpdate = highlights
+			.map(({ highlight: { order, id } }, index) => {
+				if (order !== index + 1) {
+					return { id, payload: { order: index + 1 } };
+				}
+				return null;
+			})
+			.filter((highlight) => highlight !== null);
+
+		if (!dataToUpdate.length) return;
+
+		await new ApiServise().patch<TIndividualUpdateHighlightsRo, IUpdateHighlightDto[]>(
+			HIGHLIGHTS_API_ROUTES.individualUpdateMany,
+			{
+				highlights: dataToUpdate,
+			} as TIndividualUpdateHighlightsRo
+		);
 	}
 
 	function getFieldsIdsByTab(): number[] {
@@ -129,6 +153,7 @@ export default function HighlightsList({ tabName }: IHighlightsListProps): JSX.E
 			useFieldArrayReturn={useFieldArrayReturn}
 			showDeleteBtn={true}
 			onDelete={onDeleteHighlight}
+			onSortEnd={onHighlightsSortEnd}
 			fieldsList={fields.map(({ highlight }, index) => {
 				if (!fieldsIdsToRender.includes(highlight.id)) return null;
 				return (

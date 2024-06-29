@@ -2,6 +2,7 @@ import INodeRangeInfo from '@/common/types/node-range-info.interface';
 
 type TBaseHighlightRo = {
 	pageUrl: string;
+	order: number;
 	startContainer: INodeRangeInfo;
 	endContainer: INodeRangeInfo;
 	startOffset: number;

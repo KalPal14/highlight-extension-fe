@@ -17,6 +17,7 @@ export interface ISortableFieldsProps<Fields extends FieldValues> {
 	};
 	showDeleteBtn?: boolean;
 	onDelete?: (index: number) => void;
+	onSortEnd?: () => void;
 }
 
 export default function SortableFields<Fields extends FieldValues>({
@@ -25,11 +26,15 @@ export default function SortableFields<Fields extends FieldValues>({
 	addBtn,
 	showDeleteBtn,
 	onDelete,
+	onSortEnd,
 }: ISortableFieldsProps<Fields>): JSX.Element {
 	const { move, append, remove } = useFieldArrayReturn;
 
 	function sortEnd({ oldIndex, newIndex }: { oldIndex: number; newIndex: number }): void {
 		move(oldIndex, newIndex);
+		if (onSortEnd) {
+			onSortEnd();
+		}
 	}
 
 	function addElement(): void {
