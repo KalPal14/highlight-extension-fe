@@ -6,11 +6,12 @@ import {
 	Button,
 	Box,
 	Text,
+	useToast,
 } from '@chakra-ui/react';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 
-import TChangePageUrlForm from '../types/change-page-url-form.interface';
+import IChangePageUrlForm from '../types/change-page-url-form.interface';
 
 import AccordionForm from '@/common/ui/forms/accordion-form';
 import TextField from '@/common/ui/fields/text-field';
@@ -21,6 +22,7 @@ import { PAGES_API_ROUTES } from '@/common/constants/api-routes/pages';
 import IUpdatePageDto from '@/common/types/dto/pages/update-page.interface';
 import TUpdatePageRo from '@/common/types/ro/pages/update-page.type';
 import { HTTPError } from '@/errors/http-error/http-error';
+import httpErrHandler from '@/errors/http-error/http-err-handler';
 
 export interface IPageItemProps {
 	page: TArrayElement<TGetPagesDto>;
@@ -28,20 +30,57 @@ export interface IPageItemProps {
 }
 
 export default function PageItem({ page, onUpdatePage }: IPageItemProps): JSX.Element {
-	const useFormReturnValue = useForm<TChangePageUrlForm>();
+	const toast = useToast({
+		duration: 4000,
+		isClosable: true,
+		status: 'error',
+		position: 'top',
+	});
+	const useFormReturnValue = useForm<IChangePageUrlForm>();
 	const {
 		register,
 		formState: { errors },
+		setError,
 	} = useFormReturnValue;
 
-	async function onSubmit(pageId: number, { url }: TChangePageUrlForm): Promise<boolean> {
+	async function onSubmit(pageId: number, { url }: IChangePageUrlForm): Promise<boolean> {
 		const resp = await new ApiServise().patch<TUpdatePageRo, IUpdatePageDto>(
 			PAGES_API_ROUTES.update(pageId),
 			{ url }
 		);
-		if (resp instanceof HTTPError) return false;
+		if (resp instanceof HTTPError) {
+			handleErr(resp);
+			return false;
+		}
 		onUpdatePage(resp);
+		toast({
+			title: 'Page url has been successfully changed',
+			status: 'success',
+		});
 		return true;
+	}
+
+	function handleErr(err: HTTPError): void {
+		httpErrHandler({
+			err,
+			onValidationErr(property, errors) {
+				setError(property as keyof IChangePageUrlForm, {
+					message: errors.join(),
+				});
+			},
+			onErrWithMsg(msg) {
+				toast({
+					title: 'Failed to update page url',
+					description: msg,
+				});
+			},
+			onUnhandledErr() {
+				toast({
+					title: 'Failed to update page url',
+					description: 'Something went wrong. Please try again',
+				});
+			},
+		});
 	}
 
 	return (
