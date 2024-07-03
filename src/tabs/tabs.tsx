@@ -1,7 +1,6 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 
-import PagesPage from './pages/pages-page';
 import LoginPage from './login/login-page';
 import RegistrationPage from './registration/registration-page';
 
@@ -17,10 +16,6 @@ export default function Tabs(): JSX.Element {
 			<Route
 				path={TABS_ROUTES.registration}
 				element={<RegistrationPage />}
-			/>
-			<Route
-				path={TABS_ROUTES.pages}
-				element={<PagesPage />}
 			/>
 		</Routes>
 	);

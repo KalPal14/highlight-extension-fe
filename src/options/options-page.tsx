@@ -1,22 +1,44 @@
-import React from 'react';
-import { Alert, AlertIcon, Heading, Text } from '@chakra-ui/react';
+import React, { useEffect, useState } from 'react';
+import {
+	Alert,
+	AlertIcon,
+	Heading,
+	Tab,
+	TabList,
+	TabPanel,
+	TabPanels,
+	Tabs,
+} from '@chakra-ui/react';
 
-import './options.scss';
+import tabsList from './constants/tabs-list';
 
-import ChangeEmailForm from './components/change-email-form';
-import ChangeUsernameForm from './components/change-username-form';
-import ChangePasswordForm from './components/change-password-form';
-import ChangeColorsForm from './components/change-colors-form';
-
-import { DEF_COLORS } from '@/common/constants/default-values/colors';
 import useCrossExtState from '@/common/hooks/cross-ext-state.hook';
 import IBaseUserDto from '@/common/types/dto/users/base/base-user-info.interface';
+import setUrlSearchParam from '@/common/helpers/set-url-search-param.helper';
+import getUrlSearchParam from '@/common/helpers/get-url-search-param.helper';
 
 const OptionsPage = (): JSX.Element => {
-	const [currentUser, setCurrentUser] = useCrossExtState<IBaseUserDto | null>('currentUser', null);
+	const [currentUser] = useCrossExtState<IBaseUserDto | null>('currentUser', null);
+
+	const [activeTabIndex, setActiveTabIndex] = useState(0);
+
+	useEffect(() => {
+		const tabParam = getUrlSearchParam('tab');
+		if (!tabParam) return;
+
+		const tabIndex = tabsList.findIndex(({ searchParam }) => searchParam === tabParam);
+		if (tabIndex === -1) return;
+
+		setActiveTabIndex(tabIndex);
+	}, []);
+
+	function onTabChange(newParam: string, newIndex: number): void {
+		setUrlSearchParam('tab', newParam);
+		setActiveTabIndex(newIndex);
+	}
 
 	return (
-		<div className="options">
+		<section className="options">
 			<Heading
 				as="h1"
 				size="2xl"
@@ -24,75 +46,39 @@ const OptionsPage = (): JSX.Element => {
 			>
 				Settings
 			</Heading>
-			<section className="options_userInfoSection">
-				<Heading
-					as="h2"
-					size="xl"
-					mb={4}
-				>
-					User info
-				</Heading>
+			<Tabs index={activeTabIndex}>
+				<TabList>
+					{tabsList.map(({ name, searchParam }, index) => (
+						<Tab
+							key={index}
+							onClick={() => onTabChange(searchParam, index)}
+						>
+							{name}
+						</Tab>
+					))}
+				</TabList>
+
 				{!currentUser && (
-					<Alert
-						status="warning"
-						mt={3}
-					>
-						<AlertIcon />
-						Sorry. We were unable to load your information. Make sure you are logged in.
-					</Alert>
+					<TabPanels>
+						<Alert
+							status="warning"
+							mt={3}
+						>
+							<AlertIcon />
+							Sorry. We were unable to load your information. Make sure you are logged in.
+						</Alert>
+					</TabPanels>
 				)}
+
 				{currentUser && (
-					<>
-						<ChangeEmailForm
-							currentEmail={currentUser.email}
-							onSuccess={(email) =>
-								setCurrentUser({
-									...currentUser,
-									email,
-								})
-							}
-						/>
-						<ChangeUsernameForm
-							currentUsername={currentUser.username}
-							onSuccess={(username) =>
-								setCurrentUser({
-									...currentUser,
-									username,
-								})
-							}
-						/>
-						<ChangePasswordForm
-							passwordUpdatedAt={currentUser.passwordUpdatedAt}
-							onSuccess={(passwordUpdatedAt) =>
-								setCurrentUser({
-									...currentUser,
-									passwordUpdatedAt,
-								})
-							}
-						/>
-						<ChangeColorsForm
-							currentColors={currentUser.colors.length ? currentUser.colors : DEF_COLORS}
-							onSuccess={(colors) =>
-								setCurrentUser({
-									...currentUser,
-									colors,
-								})
-							}
-						/>
-					</>
+					<TabPanels>
+						{tabsList.map(({ element }, index) => (
+							<TabPanel key={index}>{element}</TabPanel>
+						))}
+					</TabPanels>
 				)}
-			</section>
-			<section className="options_pagesInfoSection">
-				<Heading
-					as="h2"
-					size="xl"
-					mt={4}
-				>
-					Pages info
-				</Heading>
-				<Text>Pages bla bla</Text>
-			</section>
-		</div>
+			</Tabs>
+		</section>
 	);
 };
 

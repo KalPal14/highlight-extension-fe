@@ -1,8 +1,10 @@
 .options {
    padding: 10px;
 
-   &_userInfoSection {
-      max-width: 425px;
+   &_userInfoTab,
+   &_colorsTab,
+   &_pagesTab {
+      max-width: 768px;
    }
 
    &_colors {
@@ -24,4 +26,9 @@
    &_colorInput {
       height: 32px !important;
    }
+
+   &_text-highlighted {
+      font-weight: 700;
+      color: #319795;
+  }
 }

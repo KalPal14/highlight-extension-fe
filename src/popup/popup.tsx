@@ -7,7 +7,7 @@ import './popup.scss';
 import LoginSection from './components/login-section';
 
 import openTab from '@/common/helpers/open-tab.helper';
-import { ROOT_OPTIONS_ROUTE } from '@/common/constants/routes/options';
+import { FULL_OPTIONS_ROUTES } from '@/common/constants/routes/options';
 import useCrossExtState from '@/common/hooks/cross-ext-state.hook';
 import IBaseUserDto from '@/common/types/dto/users/base/base-user-info.interface';
 
@@ -29,7 +29,7 @@ export default function Popup(): JSX.Element {
 					placement="auto-end"
 				>
 					<SettingsIcon
-						onClick={() => openTab(ROOT_OPTIONS_ROUTE)}
+						onClick={() => openTab(FULL_OPTIONS_ROUTES.userInfo)}
 						height={7}
 						width={7}
 						color="gray.400"

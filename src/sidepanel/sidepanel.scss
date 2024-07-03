@@ -1,6 +1,16 @@
-.highlightsList {
+.sidepanel {
    padding: 16px 8px;
+   
+   &_header {
+         display: flex;
+         justify-content: flex-end;
+         border-bottom: 2px solid #dde2e7;
+         padding-bottom: 12px;
+         margin-bottom: 12px;
+   }
+}
 
+.highlightsList {
    p {
       line-height: 1.2rem;
    }

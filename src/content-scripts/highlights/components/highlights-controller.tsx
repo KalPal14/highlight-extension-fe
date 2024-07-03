@@ -6,7 +6,7 @@ import ReactTextareaAutosize from 'react-textarea-autosize';
 import IHighlightControllerDynamicStyles from '../types/highlight-controller-dynamic-styles.interface';
 
 import { DEF_COLORS } from '@/common/constants/default-values/colors';
-import { ROOT_OPTIONS_ROUTE } from '@/common/constants/routes/options';
+import { FULL_OPTIONS_ROUTES } from '@/common/constants/routes/options';
 import openTabDispatcher from '@/service-worker/handlers/open-tab/open-tab.dispatcher';
 import useCrossExtState from '@/common/hooks/cross-ext-state.hook';
 import IBaseUserDto from '@/common/types/dto/users/base/base-user-info.interface';
@@ -218,7 +218,7 @@ export default function HighlightsController({
 							))}
 						</ul>
 						<SettingsIcon
-							onClick={() => openTabDispatcher({ url: ROOT_OPTIONS_ROUTE })}
+							onClick={() => openTabDispatcher({ url: FULL_OPTIONS_ROUTES.colors })}
 							style={{
 								cursor: 'pointer',
 								margin: '1px 2px',
