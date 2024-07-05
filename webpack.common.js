@@ -36,6 +36,22 @@ module.exports = {
 			{
 				test: /\.s[ac]ss$/i,
 				use: ['style-loader', 'css-loader', 'sass-loader'],
+				exclude: [/\.shadow-dom.scss$/, /node_modules/],
+			},
+			{
+				test: /\.shadow-dom.scss$/,
+				exclude: /node_modules/,
+				use: [
+					'sass-to-string',
+					{
+						loader: 'sass-loader',
+						options: {
+							sassOptions: {
+								outputStyle: 'compressed',
+							},
+						},
+					},
+				],
 			},
 			{
 				type: 'assets/resource',
