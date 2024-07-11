@@ -1,4 +1,7 @@
 import React, { useEffect } from 'react';
+import toast, { Toaster } from 'react-hot-toast';
+
+import Toast from '../common/ui/toasts/toast';
 
 import createRangeFromHighlightDto from './helpers/for-DOM-changes/create-range-from-highlight-dto.helper';
 import CreateHighlight from './components/create-highlight';
@@ -80,13 +83,29 @@ export default function Highlights(): JSX.Element {
 			}
 		});
 
+		toast(
+			<Toast
+				status="success"
+				title={`${highlights.length} highlight${highlights.length > 1 ? 's' : ''} successfully found in text`}
+			/>
+		);
+		if (newUnfoundHighlightsIds.length) {
+			toast(
+				<Toast
+					status="warning"
+					title={`${newUnfoundHighlightsIds.length} highlight${newUnfoundHighlightsIds.length > 1 ? 's' : ''} not found in text`}
+					description="You can see them by opening the sidepanel"
+				/>
+			);
+		}
 		setUnfoundHighlightsIds((prevState) => [...prevState, ...newUnfoundHighlightsIds]);
 	}
 
 	return (
-		<>
+		<main>
+			<Toaster position="bottom-center" />
 			<CreateHighlight />
 			<InteractionWithHighlight />
-		</>
+		</main>
 	);
 }
