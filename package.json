@@ -52,6 +52,7 @@
 		"framer-motion": "^11.0.12",
 		"lodash": "^4.17.21",
 		"react-hook-form": "^7.51.0",
+		"react-hot-toast": "^2.4.1",
 		"react-router-dom": "6.2",
 		"react-shadow-root": "^6.2.0",
 		"react-sortable-hoc": "^2.0.0",

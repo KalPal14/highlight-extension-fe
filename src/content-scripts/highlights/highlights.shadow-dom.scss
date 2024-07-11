@@ -1,7 +1,5 @@
-.highlights_toast {
-   background-color: #38B2AC;
+@import '../common/ui/common.shadow-dom.scss';
 
-   p {
-      margin: 0;
-   }
+* {
+   box-sizing: border-box;
 }
