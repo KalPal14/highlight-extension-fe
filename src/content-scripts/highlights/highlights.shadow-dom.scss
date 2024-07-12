@@ -3,3 +3,111 @@
 * {
    box-sizing: border-box;
 }
+
+$box-shadow: rgba(255, 255, 255, 0.2) 0px 2px 8px 0px;
+
+$color-gray-100: #d4d4bf;
+$color-gray-600: #4a4a4a;
+
+$border-white: 1px solid #fff;
+
+.highlighController {
+   &_topPanel {
+      z-index: 999;
+      position: absolute;
+      display: flex;
+      padding: 5px;
+      border-radius: 10px;
+      border: $border-white;
+      box-shadow: $box-shadow;
+      background-color: $color-gray-100;
+
+      &-externalLinkOnly {
+         padding: 5px 5px 6px 6px;
+      }
+
+      svg {
+         cursor: pointer;
+         width: 22px;
+         color: $color-gray-600;
+         margin: 0 1.5px;
+      }
+   }
+
+   &_mainPanel {
+      z-index: 999;
+      position: absolute;
+   }
+
+   &_mainPanelBtnsContainer {
+      display: flex;
+      align-items: center;
+      background-color: rgba(255, 255, 255, 0);
+   }
+
+   &_noteBtn {
+      z-index: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 8px 10px 10px;
+      border-radius: 50%;
+      border: $border-white;
+      box-shadow: $box-shadow;
+      background-color: $color-gray-600;
+
+      svg {
+         width: 24px;
+         color: #fff;
+      }
+   }
+
+   &_noteTextarea {
+      position: absolute;
+      margin-top: 4px;
+      padding: 6px;
+      background-color: $color-gray-100;
+      border-radius: 4px;
+      resize: none;
+   }
+
+   &_colorsAndSettingsContainer {
+      display: flex;
+      padding: 6px;
+      border-radius: 10px;
+      border: $border-white;
+      box-shadow: $box-shadow;
+      background-color: $color-gray-100;
+   }
+
+   &_colors {
+      display: flex;
+      max-width: 208px;
+      flex-wrap: wrap;
+      padding: 0;
+      margin: 0;
+   }
+
+   &_color {
+      list-style: none;
+      flex: 0 1 23px;
+      cursor: pointer;
+      margin: 1px 1.5px;
+
+      div {
+         width: 23px;
+         height: 23px;
+         border-radius: 50%;
+      }
+   }
+
+   &_settingsBtn {
+      cursor: pointer;
+      margin: 1px 2px;
+      width: 24px;
+      color: $color-gray-600;
+      padding-left: 4px;
+      border-left: 1px solid $color-gray-600;
+   }
+}

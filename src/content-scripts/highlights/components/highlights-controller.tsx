@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { EditIcon, DeleteIcon, SettingsIcon, ExternalLinkIcon } from '@chakra-ui/icons';
 import { useForm } from 'react-hook-form';
 import ReactTextareaAutosize from 'react-textarea-autosize';
+import cl from 'classnames';
 
 import IHighlightControllerDynamicStyles from '../types/highlight-controller-dynamic-styles.interface';
 
@@ -94,139 +95,65 @@ export default function HighlightsController({
 	const ds = calculateDynamicStyles();
 
 	return (
-		<>
-			{forExistingHighlight && (
-				<section
-					className="highlighControllerTopPanel"
-					style={{
-						zIndex: '999',
-						position: 'absolute',
-						top: pageY - 40,
-						left: ds.left,
-						display: 'flex',
-						padding: '6px',
-						borderRadius: '10px',
-						border: '1px solid #fff',
-						boxShadow: 'rgba(255, 255, 255, 0.2) 0px 2px 8px 0px',
-						backgroundColor: '#d4d4bf',
-					}}
-				>
-					<DeleteIcon
-						onClick={onDeleteClick}
-						style={{
-							cursor: 'pointer',
-							width: '24px',
-							color: '#4a4a4a',
-							margin: '0 1.5px',
-						}}
-					/>
-					<ExternalLinkIcon
-						onClick={(): void => openSidepanelDispatcher({ url: window.location.href })}
-						style={{
-							cursor: 'pointer',
-							width: '24px',
-							color: '#4a4a4a',
-							margin: '0 1.5px',
-						}}
-					/>
-				</section>
-			)}
+		<article className="highlighController">
+			<section
+				className={cl('highlighController_topPanel', {
+					'highlighController_topPanel-externalLinkOnly': !forExistingHighlight,
+				})}
+				style={{
+					top: pageY - 40,
+					left: ds.left,
+				}}
+			>
+				{forExistingHighlight && <DeleteIcon onClick={onDeleteClick} />}
+				<ExternalLinkIcon
+					onClick={(): void => openSidepanelDispatcher({ url: window.location.href })}
+				/>
+			</section>
 
 			<section
-				className="highlighController"
+				className="highlighController_mainPanel"
 				style={{
-					zIndex: '999',
-					position: 'absolute',
 					top: pageY,
 					left: ds.left,
 				}}
 			>
-				<div
-					style={{
-						display: 'flex',
-						alignItems: 'center',
-						backgroundColor: 'rgba(255, 255, 255, 0)',
-					}}
-				>
+				<div className="highlighController_mainPanelBtnsContainer">
 					<div
 						onClick={() => setShowNoteField(!showNoteField)}
 						className="highlighController_noteBtn"
 						style={{
-							zIndex: 1,
-							cursor: 'pointer',
-							display: 'flex',
-							alignItems: 'center',
-							justifyContent: 'center',
 							marginRight: `-${ds.noteBtnMlAbs}px`,
-							padding: '8px 8px 10px 10px',
-							borderRadius: '50%',
-							border: '1px solid #fff',
-							boxShadow: 'rgba(255, 255, 255, 0.2) 0px 2px 8px 0px',
-							backgroundColor: '#4a4a4a',
 						}}
 					>
-						<EditIcon
-							style={{
-								width: '24px',
-								color: '#fff',
-							}}
-						/>
+						<EditIcon />
 					</div>
 					<div
+						className="highlighController_colorsAndSettingsContainer"
 						style={{
-							display: 'flex',
-							padding: '6px',
 							paddingLeft: `${ds.noteBtnMlAbs}px`,
-							borderRadius: '10px',
-							border: '1px solid #fff',
-							boxShadow: 'rgba(255, 255, 255, 0.2) 0px 2px 8px 0px',
-							backgroundColor: '#d4d4bf',
 						}}
 					>
-						<ul
-							className="highlighController_colors"
-							style={{
-								display: 'flex',
-								maxWidth: '208px',
-								flexWrap: 'wrap',
-								padding: 0,
-								margin: 0,
-							}}
-						>
+						<ul className="highlighController_colors">
 							{colors.map(({ color }, index) => (
 								<li
 									key={index}
 									className="highlighController_color"
-									style={{
-										listStyle: 'none',
-										flex: '0 1 23px',
-										cursor: 'pointer',
-										margin: '1px 1.5px',
-									}}
 								>
 									<div
 										key={index}
 										onClick={() => onSelectColor(color, watch('note'))}
 										style={{
-											width: '23px',
-											height: '23px',
-											borderRadius: '50%',
 											backgroundColor: color,
 										}}
 									/>
 								</li>
 							))}
 						</ul>
+
 						<SettingsIcon
 							onClick={() => openTabDispatcher({ url: FULL_OPTIONS_ROUTES.colors })}
-							style={{
-								cursor: 'pointer',
-								margin: '1px 2px',
-								width: '24px',
-								color: '#4a4a4a',
-								paddingLeft: '4px',
-								borderLeft: '1px solid #4a4a4a',
-							}}
+							className="highlighController_settingsBtn"
 						/>
 					</div>
 				</div>
@@ -235,20 +162,15 @@ export default function HighlightsController({
 						minRows={3}
 						{...register('note')}
 						placeholder="Note..."
+						className="highlighController_noteTextarea"
 						style={{
-							position: 'absolute',
 							width: `${ds.controllerWidth - 15}px`,
-							marginTop: '4px',
 							marginLeft: `${ds.noteTextareaMl}px`,
-							padding: '6px',
-							backgroundColor: '#d4d4bf',
-							borderRadius: '4px',
-							resize: 'none',
 						}}
 						rows={5}
 					/>
 				)}
 			</section>
-		</>
+		</article>
 	);
 }
