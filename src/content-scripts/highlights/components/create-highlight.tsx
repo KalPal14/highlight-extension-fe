@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 
 import buildCreateHighlightRo from '../helpers/build-create-highlight-ro.helper';
 import createRangeFromHighlightDto from '../helpers/for-DOM-changes/create-range-from-highlight-dto.helper';
@@ -12,6 +13,9 @@ import ICreateHighlightDto from '@/common/types/dto/highlights/create-highlight.
 import apiRequestDispatcher from '@/service-worker/handlers/api-request/api-request.dispatcher';
 import IApiRequestOutcomeMsg from '@/service-worker/types/outcome-msgs/api-request.outcome-msg.interface';
 import useCrossExtState from '@/common/hooks/cross-ext-state.hook';
+import { HTTPError } from '@/errors/http-error/http-error';
+import Toast from '@/content-scripts/common/ui/toasts/toast';
+import httpErrHandler from '@/errors/http-error/http-err-handler';
 
 export default function CreateHighlight(): JSX.Element {
 	const [, setCreatedHighlight] = useCrossExtState<ICreateHighlightDto | null>(
@@ -56,11 +60,14 @@ export default function CreateHighlight(): JSX.Element {
 		serviceWorkerHandler,
 		contentScriptsHandler,
 		data,
+		isDataHttpError,
 	}: IApiRequestOutcomeMsg): void {
 		if (serviceWorkerHandler !== 'apiRequest') return;
 		switch (contentScriptsHandler) {
 			case 'createHighlightHandler':
-				createHighlightRespHandler(data as ICreateHighlightDto);
+				isDataHttpError
+					? createHighlightErrHandler(data as HTTPError)
+					: createHighlightRespHandler(data as ICreateHighlightDto);
 				return;
 		}
 	}
@@ -77,6 +84,28 @@ export default function CreateHighlight(): JSX.Element {
 			url: HIGHLIGHTS_API_ROUTES.create,
 			method: 'post',
 			data: newHighlightData,
+		});
+	}
+
+	function createHighlightErrHandler(err: HTTPError): void {
+		httpErrHandler({
+			err,
+			onErrWithMsg(msg) {
+				toast(
+					<Toast
+						title="Error creating highlight"
+						description={msg}
+					/>
+				);
+			},
+			onUnhandledErr() {
+				toast(
+					<Toast
+						title="Error creating highlight"
+						description="Please reload the page or try again later"
+					/>
+				);
+			},
 		});
 	}
 

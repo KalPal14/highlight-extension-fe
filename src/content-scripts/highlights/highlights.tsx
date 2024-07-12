@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 
 import Toast from '../common/ui/toasts/toast';
@@ -15,13 +15,25 @@ import TGetPageRo from '@/common/types/ro/pages/get-page.type';
 import apiRequestDispatcher from '@/service-worker/handlers/api-request/api-request.dispatcher';
 import IApiRequestOutcomeMsg from '@/service-worker/types/outcome-msgs/api-request.outcome-msg.interface';
 import useCrossExtState from '@/common/hooks/cross-ext-state.hook';
+import { HTTPError } from '@/errors/http-error/http-error';
+import httpErrHandler from '@/errors/http-error/http-err-handler';
 
 export default function Highlights(): JSX.Element {
+	const componentBeforeGettingPageInfo = useRef(true);
+
 	const [jwt] = useCrossExtState<null | string>('jwt', null);
 	const [, setUnfoundHighlightsIds] = useCrossExtState<number[]>('unfoundHighlightsIds', []);
 
 	useEffect(() => {
 		chrome.runtime.onMessage.addListener(apiResponseMsgHandler);
+		apiRequestDispatcher<TGetPageRo>({
+			contentScriptsHandler: 'getPageHandler',
+			method: 'get',
+			url: PAGES_API_ROUTES.getPage,
+			data: {
+				url: location.href,
+			},
+		});
 
 		return () => {
 			chrome.runtime.onMessage.removeListener(apiResponseMsgHandler);
@@ -29,6 +41,7 @@ export default function Highlights(): JSX.Element {
 	}, []);
 
 	useEffect(() => {
+		if (componentBeforeGettingPageInfo.current) return;
 		if (jwt) {
 			apiRequestDispatcher<TGetPageRo>({
 				contentScriptsHandler: 'getPageHandler',
@@ -42,22 +55,55 @@ export default function Highlights(): JSX.Element {
 		}
 
 		const highlights = document.getElementsByTagName('WEB-HIGHLIGHT');
-		if (highlights.length) {
-			window.location.reload();
+		if (!highlights.length) {
+			toast(
+				<Toast
+					title="Error getting page information"
+					description="User is not authorized"
+				/>
+			);
+			return;
 		}
+		window.location.reload();
 	}, [jwt]);
 
 	function apiResponseMsgHandler({
 		serviceWorkerHandler,
 		contentScriptsHandler,
 		data,
+		isDataHttpError,
 	}: IApiRequestOutcomeMsg): void {
 		if (serviceWorkerHandler !== 'apiRequest') return;
 		switch (contentScriptsHandler) {
 			case 'getPageHandler':
-				getPageHandler(data as TGetPageDto);
+				isDataHttpError
+					? getPageErrHandler(data as HTTPError)
+					: getPageHandler(data as TGetPageDto);
+				componentBeforeGettingPageInfo.current = false;
 				return;
 		}
+	}
+
+	function getPageErrHandler(err: HTTPError): void {
+		httpErrHandler({
+			err,
+			onErrWithMsg(msg) {
+				toast(
+					<Toast
+						title="Error getting page information"
+						description={msg}
+					/>
+				);
+			},
+			onUnhandledErr() {
+				toast(
+					<Toast
+						title="Error getting page information"
+						description="Please reload the page or try again later"
+					/>
+				);
+			},
+		});
 	}
 
 	function getPageHandler(page: TGetPageDto): void {
@@ -83,22 +129,26 @@ export default function Highlights(): JSX.Element {
 			}
 		});
 
+		renderToasts(highlights.length, newUnfoundHighlightsIds.length);
+		setUnfoundHighlightsIds((prevState) => [...prevState, ...newUnfoundHighlightsIds]);
+	}
+
+	function renderToasts(highlightsLength: number, unfoundHighlightsLength: number): void {
 		toast(
 			<Toast
 				status="success"
-				title={`${highlights.length} highlight${highlights.length > 1 ? 's' : ''} successfully found in text`}
+				title={`${highlightsLength} highlight${highlightsLength > 1 ? 's' : ''} successfully found in text`}
 			/>
 		);
-		if (newUnfoundHighlightsIds.length) {
+		if (unfoundHighlightsLength) {
 			toast(
 				<Toast
 					status="warning"
-					title={`${newUnfoundHighlightsIds.length} highlight${newUnfoundHighlightsIds.length > 1 ? 's' : ''} not found in text`}
+					title={`${unfoundHighlightsLength} highlight${unfoundHighlightsLength > 1 ? 's' : ''} not found in text`}
 					description="You can see them by opening the sidepanel"
 				/>
 			);
 		}
-		setUnfoundHighlightsIds((prevState) => [...prevState, ...newUnfoundHighlightsIds]);
 	}
 
 	return (

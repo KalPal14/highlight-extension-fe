@@ -32,10 +32,10 @@ export default function Toast({ status = 'error', title, description }: IToastPr
 			})}
 		>
 			<Icon className="csToast_svgImg" />
-			<p>
+			<div className="csToast_textContainer">
 				{title ? <h6>{title}</h6> : <span>{description}</span>}
 				{title && <span>{description}</span>}
-			</p>
+			</div>
 		</article>
 	);
 }

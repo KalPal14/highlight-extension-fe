@@ -1,5 +1,6 @@
 import ApiServise from '@/common/services/api.service';
 import { TRoLimiter } from '@/common/services/api.service.interface';
+import { HTTPError } from '@/errors/http-error/http-error';
 import IApiRequestIncomeMsg from '@/service-worker/types/income-msgs/api-request.income-msg.interface';
 import IApiRequestOutcomeMsg from '@/service-worker/types/outcome-msgs/api-request.outcome-msg.interface';
 
@@ -15,6 +16,7 @@ export default async function apiRequestHandler<RO extends TRoLimiter>(
 		serviceWorkerHandler,
 		contentScriptsHandler,
 		data: resp,
+		isDataHttpError: resp instanceof HTTPError,
 		incomeData: data,
 	});
 }
