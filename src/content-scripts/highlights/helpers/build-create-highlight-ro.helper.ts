@@ -3,6 +3,7 @@ import getHighlightPerent from './to-receive-DOM-data/get-highlight-perent.helpe
 import setInitialTextToHighlightPerent from './for-DOM-changes/set-initial-text-to-highlight-perent.helper';
 
 import TCreateHighlightRo from '@/common/types/ro/highlights/create-highlight.type';
+import getPageUrl from '@/common/helpers/get-page-url.helper';
 
 export default function buildCreateHighlightRo(
 	range: Range,
@@ -34,7 +35,7 @@ export default function buildCreateHighlightRo(
 	const endNodeIndex = sameToEndContainerPerent.indexOf(endContainerPerent);
 
 	return {
-		pageUrl: location.href,
+		pageUrl: getPageUrl(),
 		startOffset: calculateOffset(range.startContainer, startContainerPerent, range.startOffset),
 		endOffset: calculateOffset(range.endContainer, endContainerPerent, range.endOffset),
 		startContainer: {

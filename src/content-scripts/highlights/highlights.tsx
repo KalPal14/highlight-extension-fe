@@ -17,6 +17,7 @@ import IApiRequestOutcomeMsg from '@/service-worker/types/outcome-msgs/api-reque
 import useCrossExtState from '@/common/hooks/cross-ext-state.hook';
 import { HTTPError } from '@/errors/http-error/http-error';
 import httpErrHandler from '@/errors/http-error/http-err-handler';
+import getPageUrl from '@/common/helpers/get-page-url.helper';
 
 export default function Highlights(): JSX.Element {
 	const componentBeforeGettingPageInfo = useRef(true);
@@ -31,7 +32,7 @@ export default function Highlights(): JSX.Element {
 			method: 'get',
 			url: PAGES_API_ROUTES.getPage,
 			data: {
-				url: location.href,
+				url: getPageUrl(),
 			},
 		});
 
@@ -48,7 +49,7 @@ export default function Highlights(): JSX.Element {
 				method: 'get',
 				url: PAGES_API_ROUTES.getPage,
 				data: {
-					url: location.href,
+					url: getPageUrl(),
 				},
 			});
 			return;

@@ -12,6 +12,7 @@ import openTabDispatcher from '@/service-worker/handlers/open-tab/open-tab.dispa
 import useCrossExtState from '@/common/hooks/cross-ext-state.hook';
 import IBaseUserDto from '@/common/types/dto/users/base/base-user-info.interface';
 import openSidepanelDispatcher from '@/service-worker/handlers/open-sidepanel/open-sidepanel.dispatcher';
+import getPageUrl from '@/common/helpers/get-page-url.helper';
 
 export interface IHighlightsControllerProps {
 	clientX: number;
@@ -106,9 +107,7 @@ export default function HighlightsController({
 				}}
 			>
 				{forExistingHighlight && <DeleteIcon onClick={onDeleteClick} />}
-				<ExternalLinkIcon
-					onClick={(): void => openSidepanelDispatcher({ url: window.location.href })}
-				/>
+				<ExternalLinkIcon onClick={(): void => openSidepanelDispatcher({ url: getPageUrl() })} />
 			</section>
 
 			<section
