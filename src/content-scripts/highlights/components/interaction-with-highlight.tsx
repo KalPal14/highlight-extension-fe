@@ -66,8 +66,11 @@ export default function InteractionWithHighlight(): JSX.Element {
 		const firsScrollHighlight = scrollHighlights[0];
 		if (!firsScrollHighlight) return;
 
-		const firsScrollHighlightCoord = firsScrollHighlight.getBoundingClientRect();
-		window.scrollTo({ top: firsScrollHighlightCoord.top - 100, behavior: 'smooth' });
+		const { y } = firsScrollHighlight.getBoundingClientRect();
+		window.scrollTo({
+			top: y + window.scrollY - 100,
+			behavior: 'smooth',
+		});
 		makeHighlightEffect(scrollHighlights);
 	}, [scrollHighlightId]);
 
