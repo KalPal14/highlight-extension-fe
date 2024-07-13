@@ -9,11 +9,7 @@ export default function drawHighlight(range: Range, highlight: IBaseHighlightDto
 	const nodesInRangeList = findTextToHighlight(range.commonAncestorContainer, range);
 
 	nodesInRangeList.forEach(({ node, textContent }, index) => {
-		if (
-			nodesInRangeList.length > 1 &&
-			index === nodesInRangeList.length - 1 &&
-			!textContent.isAllInRange
-		) {
+		if (index === nodesInRangeList.length - 1 && !textContent.isAllInRange) {
 			const lastNodeText = removeExtraLetterFromRange(textContent);
 			wrapTextWithHighlighterElement(node, lastNodeText, highlight);
 			return;
