@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { Heading } from '@chakra-ui/react';
-import { sortBy } from 'lodash';
 
 import IChangeHighlightForm from '../types/change-highlight-form.interface';
 import THighlightsTabName from '../types/highlights-tab-name.type';
@@ -84,8 +83,7 @@ export default function HighlightsList({ tabName }: IHighlightsListProps): JSX.E
 		const highlights = resp.highlights?.map((highlight) => ({
 			highlight,
 		}));
-		const sortedHighlights = sortBy(highlights, ({ highlight }) => highlight.order);
-		setValue('highlights', sortedHighlights);
+		setValue('highlights', highlights ?? []);
 	}
 
 	async function onDeleteHighlight(index: number): Promise<void> {
