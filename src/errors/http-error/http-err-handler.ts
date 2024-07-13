@@ -20,6 +20,10 @@ export default function httpErrHandler({
 	}
 	if (typeof err.payload !== 'string') {
 		if (!onErrWithMsg) return;
+		if (onUnhandledErr && err.statusCode === 500 && err.payload.err === 'Unexpected error') {
+			onUnhandledErr();
+			return;
+		}
 		onErrWithMsg(err.payload.err);
 		return;
 	}
