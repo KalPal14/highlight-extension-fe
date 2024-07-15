@@ -28,10 +28,9 @@ export default function InteractionWithHighlight(): JSX.Element {
 		'deletedHighlight',
 		null
 	);
-	const [scrollHighlightId] = useCrossExtState<`web-highlight-${number}` | null>(
-		'scrollHighlightId',
-		null
-	);
+	const [scrollHighlightId, setScrollHighlightId] = useCrossExtState<
+		`web-highlight-${number}` | null
+	>('scrollHighlightId', null);
 
 	const highlightElementRef = useRef<IHighlightElementData | null>(null);
 	const highlightElementToSetRef = useRef<IHighlightElementData | null>(null);
@@ -83,6 +82,7 @@ export default function InteractionWithHighlight(): JSX.Element {
 			highlight.style.backgroundColor = effectColor;
 			setTimeout(() => {
 				highlight.style.backgroundColor = currentColor;
+				setScrollHighlightId(null);
 			}, 1000);
 		}
 	}
