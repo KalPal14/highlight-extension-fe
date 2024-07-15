@@ -71,6 +71,7 @@ export default function PageItem({ page, onUpdatePage }: IPageItemProps): JSX.El
 			return false;
 		}
 		if (!pageWithNewUrl.id) return false;
+		if ((pageWithNewUrl.id = page.id)) return false;
 		return true;
 	}
 
