@@ -19,7 +19,7 @@ import TJsxContent from '@/common/types/jsx-content.type';
 export interface IAccordionFormProps<Form extends FieldValues> {
 	children: JSX.Element;
 	useFormReturnValue: UseFormReturn<Form>;
-	onSubmitHandler: (formValue: Form) => Promise<boolean>;
+	onSubmitHandler: (formValue: Form) => Promise<boolean | void>;
 	accordionButtonText: TJsxContent;
 	tooltipLabel?: string;
 	labelText?: string;

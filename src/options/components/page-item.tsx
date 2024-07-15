@@ -8,10 +8,11 @@ import {
 	Text,
 	useToast,
 } from '@chakra-ui/react';
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import IChangePageUrlForm from '../types/change-page-url-form.interface';
+import IDataForPageUpdating from '../types/data-for-page-updating.interface';
 
 import AccordionForm from '@/common/ui/forms/accordion-form';
 import TextField from '@/common/ui/fields/text-field';
@@ -23,6 +24,10 @@ import IUpdatePageDto from '@/common/types/dto/pages/update-page.interface';
 import TUpdatePageRo from '@/common/types/ro/pages/update-page.type';
 import { HTTPError } from '@/errors/http-error/http-error';
 import httpErrHandler from '@/errors/http-error/http-err-handler';
+import getPageUrl from '@/common/helpers/get-page-url.helper';
+import TGetPageRo from '@/common/types/ro/pages/get-page.type';
+import TGetPageDto from '@/common/types/dto/pages/get-page.type';
+import ConfirmationModal from '@/common/ui/modals/confirmation-modal';
 
 export interface IPageItemProps {
 	page: TArrayElement<TGetPagesDto>;
@@ -43,14 +48,40 @@ export default function PageItem({ page, onUpdatePage }: IPageItemProps): JSX.El
 		setError,
 	} = useFormReturnValue;
 
-	async function onSubmit(pageId: number, { url }: IChangePageUrlForm): Promise<boolean> {
+	const [dataForPageUpdating, setDataForPageUpdating] = useState<IDataForPageUpdating | null>();
+
+	async function onSubmit(pageId: number, { url }: IChangePageUrlForm): Promise<boolean | void> {
+		const pageWithNewUrl = await checkExistingPagesWithNewURL(url);
+
+		if (pageWithNewUrl) {
+			setDataForPageUpdating({ pageId, url });
+			return;
+		}
+
+		return updatePage(pageId, url);
+	}
+
+	async function checkExistingPagesWithNewURL(url: string): Promise<boolean> {
+		const pageWithNewUrl = await new ApiServise().get<TGetPageRo, TGetPageDto>(
+			PAGES_API_ROUTES.getPage,
+			{ url: getPageUrl(url) }
+		);
+		if (pageWithNewUrl instanceof HTTPError) {
+			handleErr(pageWithNewUrl);
+			return false;
+		}
+		if (!pageWithNewUrl.id) return false;
+		return true;
+	}
+
+	async function updatePage(pageId: number, url: string): Promise<boolean | void> {
 		const resp = await new ApiServise().patch<TUpdatePageRo, IUpdatePageDto>(
 			PAGES_API_ROUTES.update(pageId),
-			{ url }
+			{ url: getPageUrl(url) }
 		);
 		if (resp instanceof HTTPError) {
 			handleErr(resp);
-			return false;
+			return;
 		}
 		onUpdatePage(resp);
 		toast({
@@ -83,54 +114,71 @@ export default function PageItem({ page, onUpdatePage }: IPageItemProps): JSX.El
 		});
 	}
 
+	async function onConfirm(): Promise<void> {
+		if (!dataForPageUpdating) return;
+		const { pageId, url } = dataForPageUpdating;
+		await updatePage(pageId, url);
+		setDataForPageUpdating(null);
+	}
+
 	return (
-		<AccordionItem key={page.id}>
-			<h2>
-				<AccordionButton>
-					<Box
-						as="span"
-						flex="1"
-						textAlign="left"
+		<>
+			<AccordionItem key={page.id}>
+				<h2>
+					<AccordionButton>
+						<Box
+							as="span"
+							flex="1"
+							textAlign="left"
+						>
+							{page.url}
+						</Box>
+						<AccordionIcon />
+					</AccordionButton>
+				</h2>
+				<AccordionPanel pb={4}>
+					<div>
+						<AccordionForm
+							useFormReturnValue={useFormReturnValue}
+							onSubmitHandler={async (formValues) => {
+								return await onSubmit(page.id, formValues);
+							}}
+							accordionButtonText={page.url}
+							labelText="Update page url"
+						>
+							<>
+								<TextField
+									register={register}
+									errors={errors.url}
+									name="url"
+									placeholder="Please enter a new page url"
+								/>
+							</>
+						</AccordionForm>
+					</div>
+					<Text fontSize="1rem">
+						<span className="options_text-highlighted">{page.highlightsCount}</span> highlights
+					</Text>
+					<Text fontSize="1rem">
+						<span className="options_text-highlighted">{page.notesCount}</span> notes
+					</Text>
+					<Button
+						onClick={() => window.open(page.url)}
+						colorScheme="teal"
+						mt={5}
 					>
-						{page.url}
-					</Box>
-					<AccordionIcon />
-				</AccordionButton>
-			</h2>
-			<AccordionPanel pb={4}>
-				<div>
-					<AccordionForm
-						useFormReturnValue={useFormReturnValue}
-						onSubmitHandler={async (formValues) => {
-							return await onSubmit(page.id, formValues);
-						}}
-						accordionButtonText={page.url}
-						labelText="Update page url"
-					>
-						<>
-							<TextField
-								register={register}
-								errors={errors.url}
-								name="url"
-								placeholder="Please enter a new page url"
-							/>
-						</>
-					</AccordionForm>
-				</div>
-				<Text fontSize="1rem">
-					<span className="options_text-highlighted">{page.highlightsCount}</span> highlights
-				</Text>
-				<Text fontSize="1rem">
-					<span className="options_text-highlighted">{page.notesCount}</span> notes
-				</Text>
-				<Button
-					onClick={() => window.open(page.url)}
-					colorScheme="teal"
-					mt={5}
-				>
-					Go to page
-				</Button>
-			</AccordionPanel>
-		</AccordionItem>
+						Go to page
+					</Button>
+				</AccordionPanel>
+			</AccordionItem>
+			<ConfirmationModal
+				isOpen={Boolean(dataForPageUpdating)}
+				onConfirm={onConfirm}
+				onCansel={() => setDataForPageUpdating(null)}
+				header="Merge Confirmation"
+				body="The page with this URL already exists. We can merge these pages together."
+				confirmBtnText="Merge"
+			/>
+		</>
 	);
 }

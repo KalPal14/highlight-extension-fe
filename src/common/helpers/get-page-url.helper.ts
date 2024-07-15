@@ -1,6 +1,11 @@
-export default function getPageUrl(): string {
-	if (location.hash.startsWith('#/')) {
-		return location.href;
+export default function getPageUrl(str: string = location.href): string {
+	try {
+		const url = new URL(str);
+		if (url.hash.startsWith('#/')) {
+			return url.href;
+		}
+		return url.origin + url.pathname;
+	} catch {
+		return str;
 	}
-	return location.origin + location.pathname;
 }
