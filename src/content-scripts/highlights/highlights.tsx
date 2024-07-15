@@ -130,22 +130,26 @@ export default function Highlights(): JSX.Element {
 			}
 		});
 
-		renderToasts(highlights.length, newUnfoundHighlightsIds.length);
+		renderInfoToasts(highlights.length, newUnfoundHighlightsIds.length);
 		setUnfoundHighlightsIds((prevState) => [...prevState, ...newUnfoundHighlightsIds]);
 	}
 
-	function renderToasts(highlightsLength: number, unfoundHighlightsLength: number): void {
-		toast(
-			<Toast
-				status="success"
-				title={`${highlightsLength} highlight${highlightsLength > 1 ? 's' : ''} successfully found in text`}
-			/>
-		);
-		if (unfoundHighlightsLength) {
+	function renderInfoToasts(allHighlights: number, unfoundHighlights: number): void {
+		const foundHighlights = allHighlights - unfoundHighlights;
+		{
+			foundHighlights &&
+				toast(
+					<Toast
+						status="success"
+						title={`${foundHighlights} highlight${foundHighlights > 1 ? 's' : ''} successfully found in text`}
+					/>
+				);
+		}
+		if (unfoundHighlights) {
 			toast(
 				<Toast
 					status="warning"
-					title={`${unfoundHighlightsLength} highlight${unfoundHighlightsLength > 1 ? 's' : ''} not found in text`}
+					title={`${unfoundHighlights} highlight${unfoundHighlights > 1 ? 's' : ''} not found in text`}
 					description="You can see them by opening the sidepanel"
 				/>
 			);
