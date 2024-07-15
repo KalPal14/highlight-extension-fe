@@ -8,6 +8,7 @@ import {
 	InputRightElement,
 	useBoolean,
 	InputGroup,
+	FormHelperText,
 } from '@chakra-ui/react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import { FieldError, FieldValues, Path, RegisterOptions, UseFormRegister } from 'react-hook-form';
@@ -20,6 +21,7 @@ export interface ITextFieldProps<FormFields extends FieldValues> {
 	placeholder?: string;
 	label?: string;
 	type?: 'text' | 'password';
+	helperText?: string;
 }
 
 export default function TextField<FormFields extends FieldValues>({
@@ -30,6 +32,7 @@ export default function TextField<FormFields extends FieldValues>({
 	placeholder,
 	label,
 	type = 'text',
+	helperText,
 }: ITextFieldProps<FormFields>): JSX.Element {
 	const [hideText, setHideText] = useBoolean(type === 'password');
 
@@ -62,7 +65,8 @@ export default function TextField<FormFields extends FieldValues>({
 			>
 				{errors && String(errors.message)}
 			</FormErrorMessage>
-			{!errors && (
+			{!errors && helperText && <FormHelperText>{helperText}</FormHelperText>}
+			{!errors && !helperText && (
 				<Text
 					className="ErrorMessagePlasePlug"
 					fontSize="small"

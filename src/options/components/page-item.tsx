@@ -152,6 +152,7 @@ export default function PageItem({ page, onUpdatePage }: IPageItemProps): JSX.El
 									errors={errors.url}
 									name="url"
 									placeholder="Please enter a new page url"
+									helperText="This field is intended for manual updating only if the address of the page with your highlights has been changed by the page owner"
 								/>
 							</>
 						</AccordionForm>
