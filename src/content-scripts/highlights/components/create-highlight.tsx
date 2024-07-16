@@ -16,9 +16,11 @@ import useCrossExtState from '@/common/hooks/cross-ext-state.hook';
 import { HTTPError } from '@/errors/http-error/http-error';
 import Toast from '@/content-scripts/common/ui/toasts/toast';
 import httpErrHandler from '@/errors/http-error/http-err-handler';
+import ICreateHighlightExtState from '@/common/types/cross-ext-state/created-highlight-ext-state.interface';
+import getPageUrl from '@/common/helpers/get-page-url.helper';
 
 export default function CreateHighlight(): JSX.Element {
-	const [, setCreatedHighlight] = useCrossExtState<ICreateHighlightDto | null>(
+	const [, setCreatedHighlight] = useCrossExtState<ICreateHighlightExtState | null>(
 		'createdHighlight',
 		null
 	);
@@ -110,7 +112,7 @@ export default function CreateHighlight(): JSX.Element {
 	}
 
 	function createHighlightRespHandler(highlight: ICreateHighlightDto): void {
-		setCreatedHighlight(highlight);
+		setCreatedHighlight({ highlight, pageUrl: getPageUrl() });
 		const highlightRange = createRangeFromHighlightDto(highlight);
 		drawHighlight(highlightRange, highlight);
 		setSelectedRange(null);

@@ -18,16 +18,17 @@ import IDeleteHighlightDto from '@/common/types/dto/highlights/delete-highlight.
 import TGetHighlightsRo from '@/common/types/ro/highlights/get-highlights.type';
 import TGetHighlightsDto from '@/common/types/dto/highlights/get-highlights.type';
 import useCrossExtState from '@/common/hooks/cross-ext-state.hook';
+import IDeletedHighlightExtState from '@/common/types/cross-ext-state/deleted-highlight-ext-state.interface';
+import IUpdatedHighlightExtState from '@/common/types/cross-ext-state/updated-highlight-ext-state.interface';
+import getPageUrl from '@/common/helpers/get-page-url.helper';
 
 export default function InteractionWithHighlight(): JSX.Element {
-	const [, setUpdatdHighlight] = useCrossExtState<IUpdateHighlightDto | null>(
+	const [, setUpdatdHighlight] = useCrossExtState<IUpdatedHighlightExtState | null>(
 		'updatedHighlight',
 		null
 	);
-	const [deletedHighlight, setDeletedHighlight] = useCrossExtState<IDeleteHighlightDto | null>(
-		'deletedHighlight',
-		null
-	);
+	const [deletedHighlight, setDeletedHighlight] =
+		useCrossExtState<IDeletedHighlightExtState | null>('deletedHighlight', null);
 	const [scrollHighlightId, setScrollHighlightId] = useCrossExtState<
 		`web-highlight-${number}` | null
 	>('scrollHighlightId', null);
@@ -54,8 +55,8 @@ export default function InteractionWithHighlight(): JSX.Element {
 	}, []);
 
 	useEffect(() => {
-		if (!deletedHighlight) return;
-		deleteHighlight(deletedHighlight);
+		if (!deletedHighlight || deletedHighlight.pageUrl !== getPageUrl()) return;
+		deleteHighlight(deletedHighlight.highlight);
 	}, [deletedHighlight]);
 
 	useEffect(() => {
@@ -151,7 +152,7 @@ export default function InteractionWithHighlight(): JSX.Element {
 		incomeHighlightData: TUpdateHighlightRo
 	): void {
 		if (!incomeHighlightData.text) {
-			setUpdatdHighlight(newHighlightData);
+			setUpdatdHighlight({ highlight: newHighlightData, pageUrl: getPageUrl() });
 			updateHighlighterElement(newHighlightData);
 		}
 	}
@@ -204,7 +205,7 @@ export default function InteractionWithHighlight(): JSX.Element {
 	}
 
 	function deleteHighlightRespHandler(highlight: IDeleteHighlightDto): void {
-		setDeletedHighlight(highlight);
+		setDeletedHighlight({ highlight, pageUrl: getPageUrl() });
 		deleteHighlight(highlight);
 	}
 

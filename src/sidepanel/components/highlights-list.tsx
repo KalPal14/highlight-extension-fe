@@ -16,9 +16,11 @@ import { PAGES_API_ROUTES } from '@/common/constants/api-routes/pages';
 import { HTTPError } from '@/errors/http-error/http-error';
 import { HIGHLIGHTS_API_ROUTES } from '@/common/constants/api-routes/highlights';
 import IDeleteHighlightDto from '@/common/types/dto/highlights/delete-highlight.interface';
-import ICreateHighlightDto from '@/common/types/dto/highlights/create-highlight.interface';
 import IUpdateHighlightDto from '@/common/types/dto/highlights/update-highlight.interface';
 import TIndividualUpdateHighlightsRo from '@/common/types/ro/highlights/individual-update-highlights.type';
+import ICreateHighlightExtState from '@/common/types/cross-ext-state/created-highlight-ext-state.interface';
+import IDeletedHighlightExtState from '@/common/types/cross-ext-state/deleted-highlight-ext-state.interface';
+import IUpdatedHighlightExtState from '@/common/types/cross-ext-state/updated-highlight-ext-state.interface';
 
 export interface IHighlightsListProps {
 	tabName: THighlightsTabName;
@@ -27,12 +29,16 @@ export interface IHighlightsListProps {
 export default function HighlightsList({ tabName }: IHighlightsListProps): JSX.Element {
 	const pageUrl = new URL(window.location.href).searchParams.get('url');
 
-	const [createdHighlight] = useCrossExtState<ICreateHighlightDto | null>('createdHighlight', null);
-	const [deletedHighlight, setDeletedHighlight] = useCrossExtState<IDeleteHighlightDto | null>(
-		'deletedHighlight',
+	const [createdHighlight] = useCrossExtState<ICreateHighlightExtState | null>(
+		'createdHighlight',
 		null
 	);
-	const [updatedHighlight] = useCrossExtState<IUpdateHighlightDto | null>('updatedHighlight', null);
+	const [deletedHighlight, setDeletedHighlight] =
+		useCrossExtState<IDeletedHighlightExtState | null>('deletedHighlight', null);
+	const [updatedHighlight] = useCrossExtState<IUpdatedHighlightExtState | null>(
+		'updatedHighlight',
+		null
+	);
 	const [unfoundHighlightsIds] = useCrossExtState<number[]>('unfoundHighlightsIds', []);
 
 	const { control, register, setValue, watch } = useForm<IChangeHighlightForm>({
@@ -47,22 +53,22 @@ export default function HighlightsList({ tabName }: IHighlightsListProps): JSX.E
 	const { fields, append, remove, update } = useFieldArrayReturn;
 
 	useEffect(() => {
-		if (!createdHighlight) return;
-		append({ highlight: createdHighlight });
+		if (!createdHighlight || createdHighlight.pageUrl !== pageUrl) return;
+		append({ highlight: createdHighlight.highlight });
 	}, [createdHighlight]);
 
 	useEffect(() => {
-		if (!deletedHighlight) return;
-		const index = findFieldIndex(deletedHighlight.id);
-		if (index === -1 || fields[index].highlight.id !== deletedHighlight.id) return;
+		if (!deletedHighlight || deletedHighlight.pageUrl !== pageUrl) return;
+		const index = findFieldIndex(deletedHighlight.highlight.id);
+		if (index === -1 || fields[index].highlight.id !== deletedHighlight.highlight.id) return;
 
 		remove(index);
 	}, [deletedHighlight]);
 
 	useEffect(() => {
-		if (!updatedHighlight) return;
-		const index = findFieldIndex(updatedHighlight.id);
-		update(index, { highlight: updatedHighlight });
+		if (!updatedHighlight || updatedHighlight.pageUrl !== pageUrl) return;
+		const index = findFieldIndex(updatedHighlight.highlight.id);
+		update(index, { highlight: updatedHighlight.highlight });
 	}, [updatedHighlight]);
 
 	useEffect(() => {
@@ -93,7 +99,7 @@ export default function HighlightsList({ tabName }: IHighlightsListProps): JSX.E
 			HIGHLIGHTS_API_ROUTES.delete(highlight.id)
 		);
 		if (resp instanceof HTTPError) return;
-		setDeletedHighlight(resp);
+		setDeletedHighlight({ highlight: resp, pageUrl: pageUrl ?? '' });
 	}
 
 	async function onHighlightsSortEnd(): Promise<void> {
