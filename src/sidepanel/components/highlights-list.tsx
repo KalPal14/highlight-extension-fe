@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { Heading } from '@chakra-ui/react';
 
@@ -28,6 +28,7 @@ export interface IHighlightsListProps {
 
 export default function HighlightsList({ tabName }: IHighlightsListProps): JSX.Element {
 	const pageUrl = new URL(window.location.href).searchParams.get('url');
+	const createdHighlightRerendersCount = useRef(0);
 
 	const [createdHighlight] = useCrossExtState<ICreateHighlightExtState | null>(
 		'createdHighlight',
@@ -53,6 +54,10 @@ export default function HighlightsList({ tabName }: IHighlightsListProps): JSX.E
 	const { fields, append, remove, update } = useFieldArrayReturn;
 
 	useEffect(() => {
+		if (createdHighlightRerendersCount.current <= 1) {
+			createdHighlightRerendersCount.current++;
+			return;
+		}
 		if (!createdHighlight || createdHighlight.pageUrl !== pageUrl) return;
 		append({ highlight: createdHighlight.highlight });
 	}, [createdHighlight]);

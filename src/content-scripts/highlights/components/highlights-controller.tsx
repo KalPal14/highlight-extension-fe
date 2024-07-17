@@ -11,7 +11,7 @@ import { FULL_OPTIONS_ROUTES } from '@/common/constants/routes/options';
 import openTabDispatcher from '@/service-worker/handlers/open-tab/open-tab.dispatcher';
 import useCrossExtState from '@/common/hooks/cross-ext-state.hook';
 import IBaseUserDto from '@/common/types/dto/users/base/base-user-info.interface';
-import openSidepanelDispatcher from '@/service-worker/handlers/open-sidepanel/open-sidepanel.dispatcher';
+import setSidepanelDispatcher from '@/service-worker/handlers/set-sidepanel/open-sidepanel.dispatcher';
 import getPageUrl from '@/common/helpers/get-page-url.helper';
 
 export interface IHighlightsControllerProps {
@@ -107,7 +107,9 @@ export default function HighlightsController({
 				}}
 			>
 				{forExistingHighlight && <DeleteIcon onClick={onDeleteClick} />}
-				<ExternalLinkIcon onClick={(): void => openSidepanelDispatcher({ url: getPageUrl() })} />
+				<ExternalLinkIcon
+					onClick={(): void => setSidepanelDispatcher({ url: getPageUrl(), enabled: true })}
+				/>
 			</section>
 
 			<section

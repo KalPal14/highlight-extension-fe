@@ -28,6 +28,8 @@ import getPageUrl from '@/common/helpers/get-page-url.helper';
 import TGetPageRo from '@/common/types/ro/pages/get-page.type';
 import TGetPageDto from '@/common/types/dto/pages/get-page.type';
 import ConfirmationModal from '@/common/ui/modals/confirmation-modal';
+import useCrossExtState from '@/common/hooks/cross-ext-state.hook';
+import IUpdatedPagesUrlsExtState from '@/common/types/cross-ext-state/updated-pages-urls-ext-state.interface';
 
 export interface IPageItemProps {
 	page: TArrayElement<TGetPagesDto>;
@@ -47,6 +49,10 @@ export default function PageItem({ page, onUpdatePage }: IPageItemProps): JSX.El
 		formState: { errors },
 		setError,
 	} = useFormReturnValue;
+
+	const [, setUpdatedPages] = useCrossExtState<IUpdatedPagesUrlsExtState>('updatedPages', {
+		urls: [],
+	});
 
 	const [dataForPageUpdating, setDataForPageUpdating] = useState<IDataForPageUpdating | null>();
 
@@ -85,6 +91,10 @@ export default function PageItem({ page, onUpdatePage }: IPageItemProps): JSX.El
 			return;
 		}
 		onUpdatePage(resp);
+		setUpdatedPages((prev) => ({
+			urls: [page.url, getPageUrl(url)],
+			updateTrigger: !prev.updateTrigger,
+		}));
 		toast({
 			title: 'Page url has been successfully changed',
 			status: 'success',

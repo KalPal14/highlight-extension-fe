@@ -3,8 +3,8 @@ import apiRequestHandler from './handlers/api-request/api-request.handler';
 import IBaseMsg from './types/base.msg.interface';
 import IApiRequestIncomeMsg from './types/income-msgs/api-request.income-msg.interface';
 import IOpenTabIncomeMsg from './types/income-msgs/open-tab.income-msg.interface';
-import openSidepanelHandler from './handlers/open-sidepanel/open-sidepanel.handler';
-import IOpenSidepanelIncomeMsg from './types/income-msgs/open-sidepanel.income-msg.interface';
+import setSidepanelHandler from './handlers/set-sidepanel/open-sidepanel.handler';
+import ISetSidepanelIncomeMsg from './types/income-msgs/set-sidepanel.income-msg.interface';
 
 import { TRoLimiter } from '@/common/services/api.service.interface';
 import CHROME_STOREGE_KEYS from '@/common/constants/chrome-storage-keys';
@@ -21,7 +21,7 @@ chrome.runtime.onMessage.addListener(async function <RO extends TRoLimiter>(
 			openTabHandler(msg as IOpenTabIncomeMsg);
 			return;
 		case 'openSidepanel':
-			openSidepanelHandler(msg as IOpenSidepanelIncomeMsg, sender);
+			setSidepanelHandler(msg as ISetSidepanelIncomeMsg, sender);
 	}
 });
 

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
+import { isEqual } from 'lodash';
 
 import Toast from '../common/ui/toasts/toast';
 
@@ -18,12 +19,19 @@ import useCrossExtState from '@/common/hooks/cross-ext-state.hook';
 import { HTTPError } from '@/errors/http-error/http-error';
 import httpErrHandler from '@/errors/http-error/http-err-handler';
 import getPageUrl from '@/common/helpers/get-page-url.helper';
+import IUpdatedPagesUrlsExtState from '@/common/types/cross-ext-state/updated-pages-urls-ext-state.interface';
+import setSidepanelDispatcher from '@/service-worker/handlers/set-sidepanel/open-sidepanel.dispatcher';
 
 export default function Highlights(): JSX.Element {
 	const componentBeforeGettingPageInfo = useRef(true);
+	const updatedPagesUrlsRerendersCount = useRef(0);
+	const prevHighlights = useRef<IBaseHighlightDto[] | null>(null);
 
 	const [jwt] = useCrossExtState<null | string>('jwt', null);
 	const [, setUnfoundHighlightsIds] = useCrossExtState<number[]>('unfoundHighlightsIds', []);
+	const [updatedPages] = useCrossExtState<IUpdatedPagesUrlsExtState>('updatedPages', {
+		urls: [],
+	});
 
 	useEffect(() => {
 		chrome.runtime.onMessage.addListener(apiResponseMsgHandler);
@@ -67,6 +75,18 @@ export default function Highlights(): JSX.Element {
 		}
 		window.location.reload();
 	}, [jwt]);
+
+	useEffect(() => {
+		if (updatedPagesUrlsRerendersCount.current <= 1) {
+			updatedPagesUrlsRerendersCount.current++;
+			return;
+		}
+		const pageUrl = getPageUrl();
+		if (updatedPages.urls.includes(pageUrl)) {
+			setSidepanelDispatcher({ url: getPageUrl(), enabled: false });
+			window.location.reload();
+		}
+	}, [updatedPages]);
 
 	function apiResponseMsgHandler({
 		serviceWorkerHandler,
@@ -114,6 +134,8 @@ export default function Highlights(): JSX.Element {
 
 	function drawHighlightsFromDto(highlights: IBaseHighlightDto[] | null): void {
 		if (!highlights) return;
+		if (isEqual(prevHighlights.current, highlights)) return;
+		prevHighlights.current = highlights;
 
 		const newUnfoundHighlightsIds: number[] = [];
 
