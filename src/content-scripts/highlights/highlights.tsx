@@ -32,8 +32,10 @@ export default function Highlights(): JSX.Element {
 	const [updatedPages] = useCrossExtState<IUpdatedPagesUrlsExtState>('updatedPages', {
 		urls: [],
 	});
+	const [isExtActive] = useCrossExtState<boolean>('isExtActive', false);
 
 	useEffect(() => {
+		if (!isExtActive) return;
 		chrome.runtime.onMessage.addListener(apiResponseMsgHandler);
 		apiRequestDispatcher<TGetPageRo>({
 			contentScriptsHandler: 'getPageHandler',
@@ -47,11 +49,11 @@ export default function Highlights(): JSX.Element {
 		return () => {
 			chrome.runtime.onMessage.removeListener(apiResponseMsgHandler);
 		};
-	}, []);
+	}, [isExtActive]);
 
 	useEffect(() => {
 		if (componentBeforeGettingPageInfo.current) return;
-		if (jwt) {
+		if (jwt && isExtActive) {
 			apiRequestDispatcher<TGetPageRo>({
 				contentScriptsHandler: 'getPageHandler',
 				method: 'get',
@@ -60,21 +62,25 @@ export default function Highlights(): JSX.Element {
 					url: getPageUrl(),
 				},
 			});
-			return;
 		}
 
-		const highlights = document.getElementsByTagName('WEB-HIGHLIGHT');
-		if (!highlights.length) {
-			toast(
-				<Toast
-					title="Error getting page information"
-					description="User is not authorized"
-				/>
-			);
-			return;
+		if (!isExtActive) {
+			setSidepanelDispatcher({ url: getPageUrl(), enabled: false });
 		}
-		window.location.reload();
-	}, [jwt]);
+		if (!jwt || !isExtActive) {
+			const highlights = document.getElementsByTagName('WEB-HIGHLIGHT');
+			if (!highlights.length) {
+				toast(
+					<Toast
+						title="Error getting page information"
+						description="User is not authorized"
+					/>
+				);
+				return;
+			}
+			window.location.reload();
+		}
+	}, [jwt, isExtActive]);
 
 	useEffect(() => {
 		if (updatedPagesUrlsRerendersCount.current <= 1) {
@@ -180,9 +186,13 @@ export default function Highlights(): JSX.Element {
 
 	return (
 		<main>
-			<Toaster position="bottom-center" />
-			<CreateHighlight />
-			<InteractionWithHighlight />
+			{isExtActive && (
+				<>
+					<Toaster position="bottom-center" />
+					<CreateHighlight />
+					<InteractionWithHighlight />
+				</>
+			)}
 		</main>
 	);
 }

@@ -14,6 +14,7 @@ import IBaseUserDto from '@/common/types/dto/users/base/base-user-info.interface
 export default function Popup(): JSX.Element {
 	const [jwt, setJwt] = useCrossExtState<string | null>('jwt', null);
 	const [, setCurrentUser] = useCrossExtState<IBaseUserDto | null>('currentUser', null);
+	const [isExtActive, setIsExtActive] = useCrossExtState<boolean>('isExtActive', true);
 
 	async function logout(): Promise<void> {
 		setJwt(null);
@@ -37,6 +38,13 @@ export default function Popup(): JSX.Element {
 					/>
 				</Tooltip>
 			</header>
+			<Button
+				onClick={() => setIsExtActive((prev) => !prev)}
+				colorScheme={isExtActive ? 'red' : 'teal'}
+				className="popup_extButton"
+			>
+				{isExtActive ? 'Disable' : 'Enable'} extension
+			</Button>
 			{!jwt && <LoginSection />}
 			{jwt && (
 				<section className="popup_logout">
