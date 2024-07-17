@@ -9,16 +9,43 @@ export default function drawHighlight(range: Range, highlight: IBaseHighlightDto
 	const nodesInRangeList = findTextToHighlight(range.commonAncestorContainer, range);
 
 	nodesInRangeList.forEach(({ node, textContent }, index) => {
+		let text = textContent;
 		if (index === nodesInRangeList.length - 1 && !textContent.isAllInRange) {
-			const lastNodeText = removeExtraLetterFromRange(textContent);
-			wrapTextWithHighlighterElement(node, lastNodeText, highlight);
-			return;
+			text = fixRangeTextContent(textContent, highlight.text);
 		}
-		wrapTextWithHighlighterElement(node, textContent, highlight);
+		wrapTextWithHighlighterElement(node, text, highlight);
 	});
 }
 
-function removeExtraLetterFromRange({
+function fixRangeTextContent(
+	textContent: INodeInRangeTextContent,
+	highlightText: string
+): INodeInRangeTextContent {
+	const textContentAddedLetter = addLetter(textContent);
+	const textContentRemovedLetter = removeLetter(textContent);
+
+	if (highlightText.endsWith(textContentAddedLetter.strInRange)) {
+		return textContentAddedLetter;
+	}
+	if (highlightText.endsWith(textContentRemovedLetter.strInRange)) {
+		return textContentRemovedLetter;
+	}
+	return textContent;
+}
+
+function addLetter({
+	strBeforeRange,
+	strInRange,
+	strAfterRange,
+}: INodeInRangeTextContent): INodeInRangeTextContent {
+	return {
+		strBeforeRange,
+		strInRange: strInRange + strAfterRange[0],
+		strAfterRange: strAfterRange.slice(1),
+	};
+}
+
+function removeLetter({
 	strBeforeRange,
 	strInRange,
 	strAfterRange,
